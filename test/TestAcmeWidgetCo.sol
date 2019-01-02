@@ -16,7 +16,7 @@ contract TestAcmeWidgetCo {
 
   // Testing that the contract which deployed AcmeWidgetCo is an admin
   function testDeployerIsAdmin() public {
-      bool isInList = acme.adminList[this];
+      bool isInList = acme.adminList(this);
       Assert.isTrue(isInList, "Test Contract is not an admin of AcmeWidgetCo.");
   }
 
