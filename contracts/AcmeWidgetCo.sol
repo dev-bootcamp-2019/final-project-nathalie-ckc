@@ -4,10 +4,10 @@ pragma solidity ^0.4.25;
 
 contract AcmeWidgetCo {
     // Contract variables
-    mapping (address => bool) adminList;
-    mapping (address => bool) testerList;
-    mapping (address => bool) salesDistributorList;
-    mapping (address => bool) customerList;
+    mapping (address => bool) public adminList;
+    mapping (address => bool) public testerList;
+    mapping (address => bool) public salesDistributorList;
+    mapping (address => bool) public customerList;
 
     // Modifiers
     modifier onlyAdmin {
