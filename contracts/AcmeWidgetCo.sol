@@ -3,7 +3,21 @@ pragma solidity ^0.4.24;
 // Imports go here
 
 contract AcmeWidgetCo {
+    //===========================================
+    // Struct definitions
+    //===========================================
+    struct WidgetData {
+      uint32 serialNumber;
+      uint8 factoryMadeAt;
+      uint8 siteTestedAt;
+      uint256 testResults;  // bit position == 1 => that test passed
+    }
+
+    //===========================================
     // Contract variables
+    //===========================================
+
+    // Lists of users by role
     mapping (address => bool) public adminList;
     mapping (address => bool) public testerList;
     mapping (address => bool) public salesDistributorList;
@@ -22,7 +36,15 @@ contract AcmeWidgetCo {
     mapping (bytes32 => uint8) public factoryMapping;
     mapping (bytes32 => uint8) public testSiteMapping;
 
+    // Track the widgets. Map the serial number to position in widgetList
+    // Assumption: We won't have more than 4 billion widgets
+    WidgetData[] widgetList;
+    uint32 widgetCount;
+    mapping (uint32 => uint32) widgetSerialMapping;
+
+    //===========================================
     // Modifiers
+    //===========================================
     modifier onlyAdmin {
         require(
             adminList[msg.sender],
@@ -58,17 +80,25 @@ contract AcmeWidgetCo {
 
 
     // Functions - Within a grouping, place the view and pure functions last
+
+    //===========================================
     // constructor
+    //===========================================
     constructor() public {
         // The first admin is the deployer of the contract
         adminList[msg.sender] = true;
     }
 
-
-
     // fallback function (if exists)
     // external
+
+    //===========================================
     // public
+    //===========================================
+
+    //-------------------------
+    // Admin functions
+    //-------------------------
     function registerAdmin(address _newAdmin) public onlyAdmin {
         adminList[_newAdmin] = true;
     }
@@ -89,7 +119,7 @@ contract AcmeWidgetCo {
     // Won't be added if factory is already in the list, so return 0.
     function addFactory(string _factory) public onlyAdmin returns (uint8) {
         require(factoryCount < 255);  // Prevent overflow
-        if (factoryMapping[keccak256(abi.encodePacked(_factory))]) {
+        if (factoryMapping[keccak256(abi.encodePacked(_factory))] != 0) {
             return 0;
         } else {
             factoryList.push(_factory);
@@ -103,7 +133,7 @@ contract AcmeWidgetCo {
     // Won't be added if test site is already in the list, so return 0.
     function addTestSite(string _testSite) public onlyAdmin returns (uint8) {
         require(testSiteCount < 255);  // Prevent overflow
-        if (testSiteMapping[keccak256(abi.encodePacked(_testSite))]) {
+        if (testSiteMapping[keccak256(abi.encodePacked(_testSite))] != 0) {
             return 0;
         } else {
             testSiteList.push(_testSite);
@@ -113,6 +143,25 @@ contract AcmeWidgetCo {
         }
     }
 
+    //-------------------------
+    // Tester functions
+    //-------------------------
+    // Returns the widgetID (i.e. the index into the widgetList for this widget)
+    function recordWidgetTests(uint32 _serial, uint8 _factory, uint8 _testSite, uint256 _results)
+        public
+        onlyTester
+        returns (uint32)
+    {
+        WidgetData memory w;
+        w.serialNumber = _serial;
+        w.factoryMadeAt = _factory;
+        w.siteTestedAt = _testSite;
+        w.testResults = _results;
+        widgetList.push(w);
+        widgetSerialMapping[_serial] = widgetCount;
+        widgetCount++;
+        return widgetCount;
+    }
 
     // internal
     // private
