@@ -10,13 +10,17 @@ contract AcmeWidgetCo {
     mapping (address => bool) public customerList;
 
     // Stores names of factories and test sites
+    // During the life of this contract Acme won't ever reach >256 sites
     string[] public factoryList;
     string[] public testSiteList;
+    uint8 factoryCount;
+    uint8 testSiteCount;
 
     // Used to ensure we don't add a duplicate factory or test site
     // Uses the keccak256 hash of the string for the lookup
-    mapping (bytes32 => bool) public factoryMapping;
-    mapping (bytes32 => bool) public testSiteMapping;
+    // Store the index into the string array for that name
+    mapping (bytes32 => uint8) public factoryMapping;
+    mapping (bytes32 => uint8) public testSiteMapping;
 
     // Modifiers
     modifier onlyAdmin {
@@ -81,25 +85,31 @@ contract AcmeWidgetCo {
         customerList[_newCustomer] = true;
     }
 
-    // Returns true if the factory was successfully added to the list
-    // Won't be added if factory is already in the list, so return false.
-    function addFactory(string _factory) public onlyAdmin returns (bool) {
+    // Returns factoryCount if the factory was successfully added to the list
+    // Won't be added if factory is already in the list, so return 0.
+    function addFactory(string _factory) public onlyAdmin returns (uint8) {
+        require(factoryCount < 255);  // Prevent overflow
         if (factoryMapping[keccak256(abi.encodePacked(_factory))]) {
-            return false;
+            return 0;
         } else {
             factoryList.push(_factory);
-            return true;
+            factoryMapping[keccak256(abi.encodePacked(_factory))] = factoryCount;
+            factoryCount++;
+            return factoryCount;
         }
     }
 
-    // Returns true if the test site was successfully added to the list
-    // Won't be added if test site is already in the list, so return false.
-    function addTestSite(string _testSite) public onlyAdmin returns (bool) {
+    // Returns testSiteCount if the test site was successfully added to the list
+    // Won't be added if test site is already in the list, so return 0.
+    function addTestSite(string _testSite) public onlyAdmin returns (uint8) {
+        require(testSiteCount < 255);  // Prevent overflow
         if (testSiteMapping[keccak256(abi.encodePacked(_testSite))]) {
-            return false;
+            return 0;
         } else {
             testSiteList.push(_testSite);
-            return true;
+            testSiteMapping[keccak256(abi.encodePacked(_testSite))] = testSiteCount;
+            testSiteCount++;
+            return testSiteCount;
         }
     }
 
