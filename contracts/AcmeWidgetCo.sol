@@ -9,6 +9,14 @@ contract AcmeWidgetCo {
     mapping (address => bool) public salesDistributorList;
     mapping (address => bool) public customerList;
 
+    // Stores names of factories and test sites
+    string[] public factoryList;
+    string[] public testSiteList;
+
+    // Used to ensure we don't add a duplicate factory or test site
+    mapping (string => bool) public factoryMapping;
+    mapping (string => bool) public testSiteMapping;
+
     // Modifiers
     modifier onlyAdmin {
         require(
@@ -71,6 +79,27 @@ contract AcmeWidgetCo {
     function registerCustomer(address _newCustomer) public onlyAdmin {
         customerList[_newCustomer] = true;
     }
+
+    // Returns true if the factory was successfully added to the list
+    // Won't be added if factory is already in the list, so return false.
+    function addFactory(string _factory) public onlyAdmin returns (bool) {
+        if (!factoryMapping[_factory]) {
+            factoryList.push(_factory);
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    function addTestSite(string _testSite) public onlyAdmin returns (bool) {
+        if (!testSiteMapping[_testSite]) {
+            testSiteList.push(_testSite);
+            return true;
+        } else {
+            return false;
+        }
+    }
+
 
     // internal
     // private
