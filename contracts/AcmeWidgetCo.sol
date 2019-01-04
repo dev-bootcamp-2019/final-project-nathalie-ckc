@@ -14,8 +14,9 @@ contract AcmeWidgetCo {
     string[] public testSiteList;
 
     // Used to ensure we don't add a duplicate factory or test site
-    mapping (string => bool) public factoryMapping;
-    mapping (string => bool) public testSiteMapping;
+    // Uses the keccak256 hash of the string for the lookup
+    mapping (bytes32 => bool) public factoryMapping;
+    mapping (bytes32 => bool) public testSiteMapping;
 
     // Modifiers
     modifier onlyAdmin {
@@ -83,20 +84,22 @@ contract AcmeWidgetCo {
     // Returns true if the factory was successfully added to the list
     // Won't be added if factory is already in the list, so return false.
     function addFactory(string _factory) public onlyAdmin returns (bool) {
-        if (!factoryMapping[_factory]) {
+        if (factoryMapping[keccak256(abi.encodePacked(_factory))]) {
+            return false;
+        } else {
             factoryList.push(_factory);
             return true;
-        } else {
-            return false;
         }
     }
 
+    // Returns true if the test site was successfully added to the list
+    // Won't be added if test site is already in the list, so return false.
     function addTestSite(string _testSite) public onlyAdmin returns (bool) {
-        if (!testSiteMapping[_testSite]) {
+        if (testSiteMapping[keccak256(abi.encodePacked(_testSite))]) {
+            return false;
+        } else {
             testSiteList.push(_testSite);
             return true;
-        } else {
-            return false;
         }
     }
 
