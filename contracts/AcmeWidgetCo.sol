@@ -152,6 +152,8 @@ contract AcmeWidgetCo {
         onlyTester
         returns (uint32)
     {
+        require(_factory < factoryCount);
+        require(_testSite < testSiteCount);
         WidgetData memory w;
         w.serialNumber = _serial;
         w.factoryMadeAt = _factory;
