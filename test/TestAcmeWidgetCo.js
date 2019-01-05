@@ -50,20 +50,50 @@ contract('AcmeWidgetCo', function(accounts) {
     it("Test admin populating list of factories and test sites", async() => {
         const acmeWidgetCo = await AcmeWidgetCo.deployed();
 
-        await acmeWidgetCo.addFactory("Factory1 Shanghai", {from: deployer});
+        await acmeWidgetCo.registerAdmin(admin1, {from: deployer});
+        const isInList = await acmeWidgetCo.adminList(admin1);
+        assert.equal(isInList, true, 'accounts[1] (admin1) is not an admin.');
+
+        await acmeWidgetCo.registerTester(tester1, {from: admin1});
+        const isInList1 = await acmeWidgetCo.testerList(tester1);
+        assert.equal(isInList1, true, 'admin1 could not add tester1 to testerList.');
+
+        await acmeWidgetCo.addFactory("Factory1 Shanghai", {from: admin1});
         const fact1Position = await acmeWidgetCo.factoryMapping(web3.utils.soliditySha3("Factory1 Shanghai"));
-        assert.equal(fact1Position.toNumber(), 0, 'Factory1 Shanghai is not in the list');
+        assert.equal(fact1Position.toNumber(), 0, 'Factory1 Shanghai is not in the list.');
 
-        await acmeWidgetCo.addFactory("Factory2 Taipei", {from: deployer});
+        await acmeWidgetCo.addFactory("Factory2 Taipei", {from: admin1});
         const fact2Position = await acmeWidgetCo.factoryMapping(web3.utils.soliditySha3("Factory2 Taipei"));
-        assert.equal(fact2Position.toNumber(), 1, 'Factory2 Taipei is not in the list');
+        assert.equal(fact2Position.toNumber(), 1, 'Factory2 Taipei is not in the list.');
 
-        await acmeWidgetCo.addTestSite("TS1 Singapore", {from: deployer});
+        await acmeWidgetCo.addTestSite("TS1 Singapore", {from: admin1});
         const ts1Position = await acmeWidgetCo.testSiteMapping(web3.utils.soliditySha3("TS1 Singapore"));
-        assert.equal(ts1Position.toNumber(), 0, 'TS1 Singapore is not in the list');
+        assert.equal(ts1Position.toNumber(), 0, 'TS1 Singapore is not in the list.');
 
-        await acmeWidgetCo.addTestSite("TS2 Osaka", {from: deployer});
+        await acmeWidgetCo.addTestSite("TS2 Osaka", {from: admin1});
         const ts2Position = await acmeWidgetCo.testSiteMapping(web3.utils.soliditySha3("TS2 Osaka"));
-        assert.equal(ts2Position.toNumber(), 1, 'TS2 Osaka is not in the list');
+        assert.equal(ts2Position.toNumber(), 1, 'TS2 Osaka is not in the list.');
+
+        await acmeWidgetCo.recordWidgetTests(1234001, 1, 1, 0x1234ABCD, {from: tester1});
+        const widget1 = await acmeWidgetCo.widgetList(0);
+        assert.equal(widget1[0], 1234001, 'Widget1 incorrect serial number.');
+        assert.equal(widget1[1], 1, 'Widget1 incorrect factory.');
+        assert.equal(widget1[2], 1, 'Widget1 incorrect test site.');
+        assert.equal(widget1[3], 0x1234ABCD, 'Widget1 incorrect recorded test result.');
+
+        await acmeWidgetCo.addFactory("Factory3 Delhi", {from: deployer});
+        const fact3Position = await acmeWidgetCo.factoryMapping(web3.utils.soliditySha3("Factory3 Delhi"));
+        assert.equal(fact3Position.toNumber(), 2, 'Factory3 Delhi is not in the list.');
+
+        await acmeWidgetCo.addTestSite("TS3 Austin", {from: deployer});
+        const ts3Position = await acmeWidgetCo.testSiteMapping(web3.utils.soliditySha3("TS3 Austin"));
+        assert.equal(ts3Position.toNumber(), 2, 'TS3 is not in the list.');
+
+        await acmeWidgetCo.recordWidgetTests(1234002, 2, 2, 0x12341234, {from: tester1});
+        const widget2 = await acmeWidgetCo.widgetList(1);
+        assert.equal(widget2[0], 1234002, 'Widget2 incorrect serial number.');
+        assert.equal(widget2[1], 2, 'Widget2 incorrect factory.');
+        assert.equal(widget2[2], 2, 'Widget2 incorrect test site.');
+        assert.equal(widget2[3], 0x12341234, 'Widget2 incorrect recorded test result.');
     })
 });
