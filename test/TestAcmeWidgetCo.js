@@ -1,3 +1,6 @@
+//const Web3 = require('web3');
+var Web3 = require('web3');
+var web3 = new Web3('ws://localhost:8546');
 var AcmeWidgetCo = artifacts.require('AcmeWidgetCo');
 
 contract('AcmeWidgetCo', function(accounts) {
@@ -9,7 +12,7 @@ contract('AcmeWidgetCo', function(accounts) {
     const customer1 = accounts[4];
     const customer2 = accounts[5];
 
-
+/*
     it("accounts[0] (deployer) should be an admin", async() => {
         const acmeWidgetCo = await AcmeWidgetCo.deployed();
 
@@ -42,6 +45,25 @@ contract('AcmeWidgetCo', function(accounts) {
         await acmeWidgetCo.registerCustomer(customer2, {from: admin1});
         const isInList4 = await acmeWidgetCo.customerList(customer2);
         assert.equal(isInList4, true, 'admin1 could not add customer2 to customerList.');
-    })
+    })*/
 
+    it("Test admin populating list of factories and test sites", async() => {
+        const acmeWidgetCo = await AcmeWidgetCo.deployed();
+
+        await acmeWidgetCo.addFactory("Factory1 Shanghai", {from: deployer});
+        const fact1Position = await acmeWidgetCo.factoryMapping(web3.utils.soliditySha3("Factory1 Shanghai"));
+        assert.equal(fact1Position.toNumber(), 0, 'Factory1 Shanghai is not in the list');
+
+        await acmeWidgetCo.addFactory("Factory2 Taipei", {from: deployer});
+        const fact2Position = await acmeWidgetCo.factoryMapping(web3.utils.soliditySha3("Factory2 Taipei"));
+        assert.equal(fact2Position.toNumber(), 1, 'Factory2 Taipei is not in the list');
+
+        await acmeWidgetCo.addTestSite("TS1 Singapore", {from: deployer});
+        const ts1Position = await acmeWidgetCo.testSiteMapping(web3.utils.soliditySha3("TS1 Singapore"));
+        assert.equal(ts1Position.toNumber(), 0, 'TS1 Singapore is not in the list');
+
+        await acmeWidgetCo.addTestSite("TS2 Osaka", {from: deployer});
+        const ts2Position = await acmeWidgetCo.testSiteMapping(web3.utils.soliditySha3("TS2 Osaka"));
+        assert.equal(ts2Position.toNumber(), 1, 'TS2 Osaka is not in the list');
+    })
 });
