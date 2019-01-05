@@ -10,7 +10,7 @@ contract AcmeWidgetCo {
       uint32 serialNumber;
       uint8 factoryMadeAt;
       uint8 siteTestedAt;
-      uint256 testResults;  // bit position == 1 => that test passed
+      uint32 testResults;  // bit == 1 => that test passed, 0 => test failed
     }
 
     //===========================================
@@ -51,7 +51,7 @@ contract AcmeWidgetCo {
     event NewCustomer(address indexed _newCustomerRegistered);
     event NewFactory(uint8 indexed factoryCount, string _factory);
     event NewTestSite(uint8 indexed testSiteCount, string _testSite);
-    event NewTestedWidget(uint32 indexed _serial, uint8 indexed _factory, uint8 _testSite, uint256 indexed _results, uint32 widgetCount);
+    event NewTestedWidget(uint32 indexed _serial, uint8 indexed _factory, uint8 _testSite, uint32 indexed _results, uint32 widgetCount);
 
     //===========================================
     // Modifiers
@@ -164,7 +164,7 @@ contract AcmeWidgetCo {
     // Tester functions
     //-------------------------
     // Returns the widgetID (i.e. the index into the widgetList for this widget)
-    function recordWidgetTests(uint32 _serial, uint8 _factory, uint8 _testSite, uint256 _results)
+    function recordWidgetTests(uint32 _serial, uint8 _factory, uint8 _testSite, uint32 _results)
         public
         onlyTester
         returns (uint32)
