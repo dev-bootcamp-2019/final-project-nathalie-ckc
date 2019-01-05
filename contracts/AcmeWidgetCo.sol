@@ -38,9 +38,9 @@ contract AcmeWidgetCo {
 
     // Track the widgets. Map the serial number to position in widgetList
     // Assumption: We won't have more than 4 billion widgets
-    WidgetData[] widgetList;
-    uint32 widgetCount;
-    mapping (uint32 => uint32) widgetSerialMapping;
+    WidgetData[] public widgetList;
+    uint32 public widgetCount;
+    mapping (uint32 => uint32) public widgetSerialMapping;
 
     //===========================================
     // Events
