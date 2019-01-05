@@ -43,6 +43,17 @@ contract AcmeWidgetCo {
     mapping (uint32 => uint32) widgetSerialMapping;
 
     //===========================================
+    // Events
+    //===========================================
+    event NewAdmin(address indexed _newAdminRegistered);
+    event NewTester(address indexed _newTesterRegistered);
+    event NewSalesDistributor(address indexed _newSalesDistributorRegistered);
+    event NewCustomer(address indexed _newCustomerRegistered);
+    event NewFactory(uint8 indexed factoryCount, string _factory);
+    event NewTestSite(uint8 indexed testSiteCount, string _testSite);
+    event NewTestedWidget(uint32 indexed _serial, uint8 indexed _factory, uint8 _testSite, uint256 indexed _results, uint32 widgetCount);
+
+    //===========================================
     // Modifiers
     //===========================================
     modifier onlyAdmin {
@@ -101,18 +112,22 @@ contract AcmeWidgetCo {
     //-------------------------
     function registerAdmin(address _newAdmin) public onlyAdmin {
         adminList[_newAdmin] = true;
+        emit NewAdmin(_newAdmin);
     }
 
     function registerTester(address _newTester) public onlyAdmin {
         testerList[_newTester] = true;
+        emit NewTester(_newTester);
     }
 
     function registerSalesDistributor(address _newSalesDistributor) public onlyAdmin {
         salesDistributorList[_newSalesDistributor] = true;
+        emit NewSalesDistributor(_newSalesDistributor);
     }
 
     function registerCustomer(address _newCustomer) public onlyAdmin {
         customerList[_newCustomer] = true;
+        emit NewCustomer(_newCustomer);
     }
 
     // Returns factoryCount if the factory was successfully added to the list
@@ -125,6 +140,7 @@ contract AcmeWidgetCo {
             factoryList.push(_factory);
             factoryMapping[keccak256(abi.encodePacked(_factory))] = factoryCount;
             factoryCount++;
+            emit NewFactory(factoryCount, _factory);
             return factoryCount;
         }
     }
@@ -139,6 +155,7 @@ contract AcmeWidgetCo {
             testSiteList.push(_testSite);
             testSiteMapping[keccak256(abi.encodePacked(_testSite))] = testSiteCount;
             testSiteCount++;
+            emit NewTestSite(testSiteCount, _testSite);
             return testSiteCount;
         }
     }
@@ -162,6 +179,7 @@ contract AcmeWidgetCo {
         widgetList.push(w);
         widgetSerialMapping[_serial] = widgetCount;
         widgetCount++;
+        emit NewTestedWidget(_serial, _factory, _testSite, _results, widgetCount);
         return widgetCount;
     }
 
