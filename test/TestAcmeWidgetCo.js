@@ -19,7 +19,7 @@ contract('AcmeWidgetCo', function(accounts) {
         const isInList = await acmeWidgetCo.adminList(deployer);
         assert.equal(isInList, true, 'accounts[0] (deployer) is not an admin.');
 	  })
-
+*/
     it("Test adding admin, tester, salesdist, customers", async() => {
         const acmeWidgetCo = await AcmeWidgetCo.deployed();
 
@@ -45,18 +45,11 @@ contract('AcmeWidgetCo', function(accounts) {
         await acmeWidgetCo.registerCustomer(customer2, {from: admin1});
         const isInList4 = await acmeWidgetCo.customerList(customer2);
         assert.equal(isInList4, true, 'admin1 could not add customer2 to customerList.');
-    })*/
+    })
+
 
     it("Test admin populating list of factories and test sites", async() => {
         const acmeWidgetCo = await AcmeWidgetCo.deployed();
-
-        await acmeWidgetCo.registerAdmin(admin1, {from: deployer});
-        const isInList = await acmeWidgetCo.adminList(admin1);
-        assert.equal(isInList, true, 'accounts[1] (admin1) is not an admin.');
-
-        await acmeWidgetCo.registerTester(tester1, {from: admin1});
-        const isInList1 = await acmeWidgetCo.testerList(tester1);
-        assert.equal(isInList1, true, 'admin1 could not add tester1 to testerList.');
 
         await acmeWidgetCo.addFactory("Factory1 Shanghai", {from: admin1});
         const fact1Position = await acmeWidgetCo.factoryMapping(web3.utils.soliditySha3("Factory1 Shanghai"));
@@ -73,6 +66,10 @@ contract('AcmeWidgetCo', function(accounts) {
         await acmeWidgetCo.addTestSite("TS2 Osaka", {from: admin1});
         const ts2Position = await acmeWidgetCo.testSiteMapping(web3.utils.soliditySha3("TS2 Osaka"));
         assert.equal(ts2Position.toNumber(), 1, 'TS2 Osaka is not in the list.');
+    })
+
+    it("Test tester recording widget result", async() => {
+        const acmeWidgetCo = await AcmeWidgetCo.deployed();
 
         await acmeWidgetCo.recordWidgetTests(1234001, 1, 1, 0x1234ABCD, {from: tester1});
         const widget1 = await acmeWidgetCo.widgetList(0);
@@ -80,6 +77,10 @@ contract('AcmeWidgetCo', function(accounts) {
         assert.equal(widget1[1], 1, 'Widget1 incorrect factory.');
         assert.equal(widget1[2], 1, 'Widget1 incorrect test site.');
         assert.equal(widget1[3], 0x1234ABCD, 'Widget1 incorrect recorded test result.');
+    })
+
+    it("Test that additional factory and test sites are usable", async() => {
+        const acmeWidgetCo = await AcmeWidgetCo.deployed();
 
         await acmeWidgetCo.addFactory("Factory3 Delhi", {from: deployer});
         const fact3Position = await acmeWidgetCo.factoryMapping(web3.utils.soliditySha3("Factory3 Delhi"));
