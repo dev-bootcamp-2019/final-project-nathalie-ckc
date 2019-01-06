@@ -13,6 +13,14 @@ contract AcmeWidgetCo {
       uint32 testResults;  // bit == 1 => that test passed, 0 => test failed
     }
 
+    // Assumption: Customers don't buy 1 widget from a given bin, they buy lots
+    struct WidgetOrderFill {
+      uint8 bin;
+      // Indices into corresponding bin of widgets
+      uint32 firstIndex;
+      uint32 lastIndex;
+    }
+
     //===========================================
     // Contract variables
     //===========================================
@@ -39,8 +47,24 @@ contract AcmeWidgetCo {
     // Track the widgets. Map the serial number to position in widgetList
     // Assumption: We won't have more than 4 billion widgets
     WidgetData[] public widgetList;
-    uint32 public widgetCount;
     mapping (uint32 => uint32) public widgetSerialMapping;
+    uint32 public widgetCount;
+    uint32 bin1Mask;  // What tests must pass to be in bin1 (most functionality)
+    uint32 bin2Mask;  // What tests must pass to be in bin2
+    uint32 bin3Mask;  // What tests must pass to be in bin3, else unsellable
+    uint256 bin1UnitPrice; // in wei
+    uint256 bin2UnitPrice;
+    uint256 bin3UnitPrice;
+    uint32[] public bin1Widgets; // Array of indices into widgetList
+    uint32[] public bin2Widgets;
+    uint32[] public bin3Widgets;
+    uint32 bin1WidgetCount;
+    uint32 bin2WidgetCount;
+    uint32 bin3WidgetCount;
+    uint32 lastBin1WidgetSold; // Start selling from 0, index of last sold in bin1
+    uint32 lastBin2WidgetSold;
+    uint32 lastBin3WidgetSold;
+    mapping (address => WidgetOrderFill[]) public customerWidgetMapping; // Who owns each widget in widgetList
 
     //===========================================
     // Events
@@ -98,6 +122,14 @@ contract AcmeWidgetCo {
     constructor() public {
         // The first admin is the deployer of the contract
         adminList[msg.sender] = true;
+
+        // These values can only be changed by Sales Distributors
+        bin1UnitPrice = 0.1 ether;  // HACK: Not sure if this will automatically save as wei
+        bin2UnitPrice = 0.05 ether;
+        bin3UnitPrice = 0.01 ether;
+        bin1Mask = 0xFFFFFFFF;
+        bin2Mask = 0xFFFF0000;
+        bin3Mask = 0xFF000000;
     }
 
     // fallback function (if exists)
@@ -178,7 +210,7 @@ contract AcmeWidgetCo {
         w.siteTestedAt = _testSite;
         w.testResults = _results;
         widgetList.push(w);
-        widgetSerialMapping[_serial] = widgetCount;
+        widgetSerialMapping[_serial] = widgetCount; // Save index for serial #
         widgetCount++;
         emit NewTestedWidget(_serial, _factory, _testSite, _results, widgetCount);
         return widgetCount;

@@ -71,12 +71,12 @@ contract('AcmeWidgetCo', function(accounts) {
     it("Test tester recording widget result", async() => {
         const acmeWidgetCo = await AcmeWidgetCo.deployed();
 
-        await acmeWidgetCo.recordWidgetTests(1234001, 1, 1, 0x1234ABCD, {from: tester1});
+        await acmeWidgetCo.recordWidgetTests(1234001, 1, 1, 0xFFFFFFFF, {from: tester1});
         const widget1 = await acmeWidgetCo.widgetList(0);
         assert.equal(widget1[0], 1234001, 'Widget1 incorrect serial number.');
         assert.equal(widget1[1], 1, 'Widget1 incorrect factory.');
         assert.equal(widget1[2], 1, 'Widget1 incorrect test site.');
-        assert.equal(widget1[3], 0x1234ABCD, 'Widget1 incorrect recorded test result.');
+        assert.equal(widget1[3], 0xFFFFFFFF, 'Widget1 incorrect recorded test result.');
     })
 
     it("Test that additional factory and test sites are usable", async() => {
@@ -90,11 +90,11 @@ contract('AcmeWidgetCo', function(accounts) {
         const ts3Position = await acmeWidgetCo.testSiteMapping(web3.utils.soliditySha3("TS3 Austin"));
         assert.equal(ts3Position.toNumber(), 2, 'TS3 is not in the list.');
 
-        await acmeWidgetCo.recordWidgetTests(1234002, 2, 2, 0x12341234, {from: tester1});
+        await acmeWidgetCo.recordWidgetTests(1234002, 2, 2, 0xFFFF1234, {from: tester1});
         const widget2 = await acmeWidgetCo.widgetList(1);
         assert.equal(widget2[0], 1234002, 'Widget2 incorrect serial number.');
         assert.equal(widget2[1], 2, 'Widget2 incorrect factory.');
         assert.equal(widget2[2], 2, 'Widget2 incorrect test site.');
-        assert.equal(widget2[3], 0x12341234, 'Widget2 incorrect recorded test result.');
+        assert.equal(widget2[3], 0xFFFF1234, 'Widget2 incorrect recorded test result.');
     })
 });
