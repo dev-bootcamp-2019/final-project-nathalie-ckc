@@ -118,6 +118,28 @@ contract('AcmeWidgetCo', function(accounts) {
         assert.equal(widget2[0], 1234002, 'Widget2 should be the first in Bin2.');
     })
 
+    it("Test that sales distributor can update bin unit price.", async() => {
+        const acmeWidgetCo = await AcmeWidgetCo.deployed();
+
+        const b1PriceB4 = await acmeWidgetCo.bin1UnitPrice();
+        assert.equal(b1PriceB4, 100000000000000000, 'Bin1 price should be set to 100000000000000000 wei by constructor.');
+        await acmeWidgetCo.updateUnitPrice(1, 200000000000000000, {from: salesdist1});
+        const b1PriceAfter = await acmeWidgetCo.bin1UnitPrice();
+        assert.equal(b1PriceAfter, 200000000000000000, 'Bin1 price should be set to 200000000000000000 wei.');
+
+        const b2PriceB4 = await acmeWidgetCo.bin2UnitPrice();
+        assert.equal(b2PriceB4, 50000000000000000, 'Bin2 price should be set to 50000000000000000 wei by constructor.');
+        await acmeWidgetCo.updateUnitPrice(2, 60000000000000000, {from: salesdist1});
+        const b2PriceAfter = await acmeWidgetCo.bin2UnitPrice();
+        assert.equal(b2PriceAfter, 60000000000000000, 'Bin2 price should be set to 60000000000000000 wei.');
+
+        const b3PriceB4 = await acmeWidgetCo.bin3UnitPrice();
+        assert.equal(b3PriceB4, 10000000000000000, 'Bin3 price should be set to 10000000000000000 wei by constructor.');
+        await acmeWidgetCo.updateUnitPrice(3, 30000000000000000, {from: salesdist1});
+        const b3PriceAfter = await acmeWidgetCo.bin3UnitPrice();
+        assert.equal(b3PriceAfter, 30000000000000000, 'Bin3 price should be set to 30000000000000000 wei.');
+    })
+
 /*
     it("Is unit price what I expected?", async() => {
         const acmeWidgetCo = await AcmeWidgetCo.deployed();
