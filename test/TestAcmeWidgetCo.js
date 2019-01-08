@@ -100,6 +100,24 @@ contract('AcmeWidgetCo', function(accounts) {
         assert.equal(widget2[3], 0xFFFF1234, 'Widget2 incorrect recorded test result.');
     })
 
+    it("Test that the recorded widgets in the expected bins", async() => {
+        const acmeWidgetCo = await AcmeWidgetCo.deployed();
+
+        const b1Count = await acmeWidgetCo.bin1WidgetCount();
+        assert.equal(b1Count, 1, 'Bin1 should have 1 widget.');
+
+        const b1W0 = await acmeWidgetCo.bin1Widgets(0);
+        const widget1 = await acmeWidgetCo.widgetList(b1W0);
+        assert.equal(widget1[0], 1234001, 'Widget1 should be the first in Bin1.');
+
+        const b2Count = await acmeWidgetCo.bin2WidgetCount();
+        assert.equal(b2Count, 1, 'Bin2 should have 1 widget.');
+
+        const b2W0 = await acmeWidgetCo.bin2Widgets(0);
+        const widget2 = await acmeWidgetCo.widgetList(b2W0);
+        assert.equal(widget2[0], 1234002, 'Widget2 should be the first in Bin2.');
+    })
+
 /*
     it("Is unit price what I expected?", async() => {
         const acmeWidgetCo = await AcmeWidgetCo.deployed();
