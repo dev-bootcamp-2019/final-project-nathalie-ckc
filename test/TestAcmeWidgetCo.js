@@ -140,6 +140,28 @@ contract('AcmeWidgetCo', function(accounts) {
         assert.equal(b3PriceAfter, 30000000000000000, 'Bin3 price should be set to 30000000000000000 wei.');
     })
 
+    it("Test that sales distributor can update the bin mask.", async() => {
+        const acmeWidgetCo = await AcmeWidgetCo.deployed();
+
+        const b1MaskB4 = await acmeWidgetCo.bin1Mask();
+        assert.equal(b1MaskB4, 0xFFFFFFFF, "Bin1 mask should be set to 0xFFFFFFFF by constructor.");
+        await acmeWidgetCo.updateBinMask(1, 0xFFFFFFFE, {from: salesdist1});
+        const b1MaskAfter = await acmeWidgetCo.bin1Mask();
+        assert.equal(b1MaskAfter, 0xFFFFFFFE, "Bin1 mask should be set to 0xFFFFFFFE.");
+
+        const b2MaskB4 = await acmeWidgetCo.bin2Mask();
+        assert.equal(b2MaskB4, 0xFFFF0000, "Bin2 mask should be set to 0xFFFF0000 by constructor.");
+        await acmeWidgetCo.updateBinMask(2, 0xFFFE0000, {from: salesdist1});
+        const b2MaskAfter = await acmeWidgetCo.bin2Mask();
+        assert.equal(b2MaskAfter, 0xFFFE0000, "Bin2 mask should be set to 0xFFFE0000.");
+
+        const b3MaskB4 = await acmeWidgetCo.bin3Mask();
+        assert.equal(b3MaskB4, 0xFF000000, "Bin3 mask should be set to 0xFF000000 by constructor.");
+        await acmeWidgetCo.updateBinMask(3, 0xFE000000, {from: salesdist1});
+        const b3MaskAfter = await acmeWidgetCo.bin3Mask();
+        assert.equal(b3MaskAfter, 0xFE000000, "Bin3 mask should be set to 0xFE000000.");
+    })
+
 /*
     it("Is unit price what I expected?", async() => {
         const acmeWidgetCo = await AcmeWidgetCo.deployed();
