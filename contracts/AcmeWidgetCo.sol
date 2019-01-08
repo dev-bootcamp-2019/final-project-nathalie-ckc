@@ -76,6 +76,7 @@ contract AcmeWidgetCo {
     event NewFactory(uint8 indexed factoryCount, string _factory);
     event NewTestSite(uint8 indexed testSiteCount, string _testSite);
     event NewTestedWidget(uint32 indexed _serial, uint8 indexed _factory, uint8 _testSite, uint32 indexed _results, uint32 widgetCount);
+    event NewUnitPrice(uint8 indexed _bin, uint256 _newPrice);
 
     //===========================================
     // Modifiers
@@ -214,6 +215,24 @@ contract AcmeWidgetCo {
         widgetCount++;
         emit NewTestedWidget(_serial, _factory, _testSite, _results, widgetCount);
         return widgetCount;
+    }
+
+    //-------------------------
+    // Sales distributor functions
+    //-------------------------
+    // HACK: Later generalize to N bins, if time allows
+    function updateUnitPrice(uint8 _bin, uint256 _newPrice) public onlySalesDistributor {
+        require((_bin > 0) && (_bin <=3), "Bin must be between 1 to 3, inclusive");
+        if (_bin == 1) {
+            bin1UnitPrice = _newPrice;
+        } else if (_bin == 2) {
+            bin2UnitPrice = _newPrice;
+        } else if (_bin == 3) {
+            bin3UnitPrice = _newPrice;
+        } else {
+            revert(); // Should never get here
+        }
+        emit NewUnitPrice(_bin, _newPrice);
     }
 
 
