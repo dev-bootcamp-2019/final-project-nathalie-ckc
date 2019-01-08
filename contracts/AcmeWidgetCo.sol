@@ -49,21 +49,21 @@ contract AcmeWidgetCo {
     WidgetData[] public widgetList;
     mapping (uint32 => uint32) public widgetSerialMapping;
     uint32 public widgetCount;
-    uint32 bin1Mask;  // What tests must pass to be in bin1 (most functionality)
-    uint32 bin2Mask;  // What tests must pass to be in bin2
-    uint32 bin3Mask;  // What tests must pass to be in bin3, else unsellable
-    uint256 bin1UnitPrice; // in wei
-    uint256 bin2UnitPrice;
-    uint256 bin3UnitPrice;
+    uint32 public bin1Mask;  // What tests must pass to be in bin1 (most functionality)
+    uint32 public bin2Mask;  // What tests must pass to be in bin2
+    uint32 public bin3Mask;  // What tests must pass to be in bin3, else unsellable
+    uint256 public bin1UnitPrice; // in wei
+    uint256 public bin2UnitPrice;
+    uint256 public bin3UnitPrice;
     uint32[] public bin1Widgets; // Array of indices into widgetList
     uint32[] public bin2Widgets;
     uint32[] public bin3Widgets;
-    uint32 bin1WidgetCount;
-    uint32 bin2WidgetCount;
-    uint32 bin3WidgetCount;
-    uint32 lastBin1WidgetSold; // Start selling from 0, index of last sold in bin1
-    uint32 lastBin2WidgetSold;
-    uint32 lastBin3WidgetSold;
+    uint32 public bin1WidgetCount;
+    uint32 public bin2WidgetCount;
+    uint32 public bin3WidgetCount;
+    uint32 public lastBin1WidgetSold; // Start selling from 0, index of last sold in bin1
+    uint32 public lastBin2WidgetSold;
+    uint32 public lastBin3WidgetSold;
     mapping (address => WidgetOrderFill[]) public customerWidgetMapping; // Who owns each widget in widgetList
 
     //===========================================
@@ -124,7 +124,7 @@ contract AcmeWidgetCo {
         adminList[msg.sender] = true;
 
         // These values can only be changed by Sales Distributors
-        bin1UnitPrice = 0.1 ether;  // HACK: Not sure if this will automatically save as wei
+        bin1UnitPrice = 0.1 ether;
         bin2UnitPrice = 0.05 ether;
         bin3UnitPrice = 0.01 ether;
         bin1Mask = 0xFFFFFFFF;
@@ -215,6 +215,7 @@ contract AcmeWidgetCo {
         emit NewTestedWidget(_serial, _factory, _testSite, _results, widgetCount);
         return widgetCount;
     }
+
 
     // internal
     // private

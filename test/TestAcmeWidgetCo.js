@@ -20,6 +20,8 @@ contract('AcmeWidgetCo', function(accounts) {
         assert.equal(isInList, true, 'accounts[0] (deployer) is not an admin.');
 	  })
 */
+
+
     it("Test adding admin, tester, salesdist, customers", async() => {
         const acmeWidgetCo = await AcmeWidgetCo.deployed();
 
@@ -97,4 +99,12 @@ contract('AcmeWidgetCo', function(accounts) {
         assert.equal(widget2[2], 2, 'Widget2 incorrect test site.');
         assert.equal(widget2[3], 0xFFFF1234, 'Widget2 incorrect recorded test result.');
     })
+
+/*
+    it("Is unit price what I expected?", async() => {
+        const acmeWidgetCo = await AcmeWidgetCo.deployed();
+        const bin1up = await acmeWidgetCo.bin1UnitPrice();
+        console.log("Bin1 Unit Price: ", bin1up.toNumber());
+    })
+    */
 });
