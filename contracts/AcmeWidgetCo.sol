@@ -61,6 +61,7 @@ contract AcmeWidgetCo {
     uint32 public bin1WidgetCount;
     uint32 public bin2WidgetCount;
     uint32 public bin3WidgetCount;
+    uint32 public unsellableWidgetCount;
     uint32 public lastBin1WidgetSold; // Start selling from 0, index of last sold in bin1
     uint32 public lastBin2WidgetSold;
     uint32 public lastBin3WidgetSold;
@@ -75,7 +76,7 @@ contract AcmeWidgetCo {
     event NewCustomer(address indexed _newCustomerRegistered);
     event NewFactory(uint8 indexed factoryCount, string _factory);
     event NewTestSite(uint8 indexed testSiteCount, string _testSite);
-    event NewTestedWidget(uint32 indexed _serial, uint8 indexed _factory, uint8 _testSite, uint32 indexed _results, uint32 widgetCount);
+    event NewTestedWidget(uint32 indexed _serial, uint8 indexed _factory, uint8 _testSite, uint32 _results, uint32 widgetCount, uint8 indexed bin, uint32 binCount);
     event NewUnitPrice(uint8 indexed _bin, uint256 _newPrice, address indexed _salesDistributor);
     event NewBinMask(uint8 indexed _bin, uint32 _newBinMask, address indexed _salesDistributor);
 
@@ -206,6 +207,8 @@ contract AcmeWidgetCo {
         require(_factory < factoryCount);           // Valid factory
         require(_testSite < testSiteCount);         // Valid test site
         require(widgetSerialMapping[_serial] == 0); // Widget not already recorded
+        uint8 bin;
+        uint32 count;
         WidgetData memory w;
         w.serialNumber = _serial;
         w.factoryMadeAt = _factory;
@@ -213,8 +216,30 @@ contract AcmeWidgetCo {
         w.testResults = _results;
         widgetList.push(w);
         widgetSerialMapping[_serial] = widgetCount; // Save index for serial #
+
+        // HACK: Generalize to N bins if time allows
+        if ((_results & bin1Mask) == bin1Mask) {
+            bin1Widgets.push(widgetCount);
+            bin1WidgetCount++;
+            bin = 1;
+            count = bin1WidgetCount;
+        } else if ((_results & bin2Mask) == bin2Mask) {
+            bin2Widgets.push(widgetCount);
+            bin2WidgetCount++;
+            bin = 2;
+            count = bin2WidgetCount;
+        } else if ((_results & bin3Mask) == bin3Mask) {
+            bin3Widgets.push(widgetCount);
+            bin3WidgetCount++;
+            bin = 3;
+            count = bin3WidgetCount;
+        } else {  // Widgets that don't match a bin are too low quality to sell
+            bin = 0;
+            unsellableWidgetCount++;
+            count = unsellableWidgetCount;
+        }
         widgetCount++;
-        emit NewTestedWidget(_serial, _factory, _testSite, _results, widgetCount);
+        emit NewTestedWidget(_serial, _factory, _testSite, _results, widgetCount, bin, count);
         return widgetCount;
     }
 
