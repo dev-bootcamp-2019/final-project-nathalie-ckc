@@ -76,7 +76,8 @@ contract AcmeWidgetCo {
     event NewFactory(uint8 indexed factoryCount, string _factory);
     event NewTestSite(uint8 indexed testSiteCount, string _testSite);
     event NewTestedWidget(uint32 indexed _serial, uint8 indexed _factory, uint8 _testSite, uint32 indexed _results, uint32 widgetCount);
-    event NewUnitPrice(uint8 indexed _bin, uint256 _newPrice);
+    event NewUnitPrice(uint8 indexed _bin, uint256 _newPrice, address indexed _salesDistributor);
+    event NewBinMask(uint8 indexed _bin, uint32 _newBinMask, address indexed _salesDistributor);
 
     //===========================================
     // Modifiers
@@ -221,6 +222,7 @@ contract AcmeWidgetCo {
     // Sales distributor functions
     //-------------------------
     // HACK: Later generalize to N bins, if time allows
+    // Allow sales distributor to update the unit price of any of the bins
     function updateUnitPrice(uint8 _bin, uint256 _newPrice) public onlySalesDistributor {
         require((_bin > 0) && (_bin <=3), "Bin must be between 1 to 3, inclusive");
         if (_bin == 1) {
@@ -232,10 +234,22 @@ contract AcmeWidgetCo {
         } else {
             revert(); // Should never get here
         }
-        emit NewUnitPrice(_bin, _newPrice);
+        emit NewUnitPrice(_bin, _newPrice, msg.sender);
     }
 
-
+    function updateBinMask(uint8 _bin, uint32 _newMask) public onlySalesDistributor {
+        require((_bin > 0) && (_bin <=3), "Bin must be between 1 to 3, inclusive");
+        if (_bin == 1) {
+            bin1Mask = _newMask;
+        } else if (_bin == 2) {
+            bin2Mask = _newMask;
+        } else if (_bin == 3) {
+            bin3Mask = _newMask;
+        } else {
+            revert(); // Should never get here
+        }
+        emit NewBinMask(_bin, _newMask, msg.sender);
+    }
     // internal
     // private
 
