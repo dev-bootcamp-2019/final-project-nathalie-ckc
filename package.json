@@ -1,7 +1,7 @@
 {
   "name": "pet-shop",
   "version": "1.0.0",
-  "description": "",
+  "description": "## Idea ACME Widget Company is a manufacturer that puts its widgets through a barrage of testing before each widget is sold.  Based on the testing, the widgets are \"binned\" so that widgets that meet better functionality and performance levels can be sold at a higher price (e.g. If widget 12345 can meet max performance from -50C to +150C, it is binned as a more expensive grade than if it could only meet max performance from -25C to +100C).",
   "main": "truffle.js",
   "directories": {
     "test": "test"
@@ -16,6 +16,16 @@
     "lite-server": "^2.3.0"
   },
   "dependencies": {
+    "openzeppelin-solidity": "2.1.1",
     "web3": "^1.0.0-beta.37"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nathalie-ckc/ConsensysDevAcademyQ4CY18_project.git"
+  },
+  "keywords": [],
+  "bugs": {
+    "url": "https://github.com/nathalie-ckc/ConsensysDevAcademyQ4CY18_project/issues"
+  },
+  "homepage": "https://github.com/nathalie-ckc/ConsensysDevAcademyQ4CY18_project#readme"
 }
