@@ -1,8 +1,12 @@
 pragma solidity ^0.4.24;
 
 import 'openzeppelin-solidity/contracts/math/SafeMath.sol';
+import './SafeMath32.sol';
 
 contract AcmeWidgetCo {
+    using SafeMath for uint256;
+    using SafeMath32 for uint32;
+
     //===========================================
     // Struct definitions
     //===========================================
@@ -46,25 +50,18 @@ contract AcmeWidgetCo {
 
     // Track the widgets. Map the serial number to position in widgetList
     // Assumption: We won't have more than 4 billion widgets
+    // Bin0 is unsellable widgets, so not all 0 indices are populated b/c N/A
+    // Bin1 has most functionality, Bin2 a bit less, Bin3 even less
     WidgetData[] public widgetList;
     mapping (uint32 => uint32) public widgetSerialMapping;
     uint32 public widgetCount;
-    uint32 public bin1Mask;  // What tests must pass to be in bin1 (most functionality)
-    uint32 public bin2Mask;  // What tests must pass to be in bin2
-    uint32 public bin3Mask;  // What tests must pass to be in bin3, else unsellable
-    uint256 public bin1UnitPrice; // in wei
-    uint256 public bin2UnitPrice;
-    uint256 public bin3UnitPrice;
+    uint32[4] public binMask;  // What tests must pass to be in each bin.
+    uint256[4] public binUnitPrice; // in wei
     uint32[] public bin1Widgets; // Array of indices into widgetList
     uint32[] public bin2Widgets;
     uint32[] public bin3Widgets;
-    uint32 public bin1WidgetCount;
-    uint32 public bin2WidgetCount;
-    uint32 public bin3WidgetCount;
-    uint32 public unsellableWidgetCount;
-    uint32 public lastBin1WidgetSold; // Start selling from 0, index of last sold in bin1
-    uint32 public lastBin2WidgetSold;
-    uint32 public lastBin3WidgetSold;
+    uint32[4] public binWidgetCount;
+    uint32[4] public lastWidgetSoldInBin; // Start selling from 0, index of last sold in bin1
     mapping (address => WidgetOrderFill[]) public customerWidgetMapping; // Who owns each widget in widgetList
 
     //===========================================
@@ -127,12 +124,12 @@ contract AcmeWidgetCo {
         adminList[msg.sender] = true;
 
         // These values can only be changed by Sales Distributors
-        bin1UnitPrice = 0.1 ether;
-        bin2UnitPrice = 0.05 ether;
-        bin3UnitPrice = 0.01 ether;
-        bin1Mask = 0xFFFFFFFF;
-        bin2Mask = 0xFFFF0000;
-        bin3Mask = 0xFF000000;
+        binUnitPrice[1] = 0.1 ether;
+        binUnitPrice[2] = 0.05 ether;
+        binUnitPrice[3] = 0.01 ether;
+        binMask[1] = 0xFFFFFFFF;
+        binMask[2] = 0xFFFF0000;
+        binMask[3] = 0xFF000000;
     }
 
     // fallback function (if exists)
@@ -208,7 +205,6 @@ contract AcmeWidgetCo {
         require(_testSite < testSiteCount);         // Valid test site
         require(widgetSerialMapping[_serial] == 0); // Widget not already recorded
         uint8 bin;
-        uint32 count;
         WidgetData memory w;
         w.serialNumber = _serial;
         w.factoryMadeAt = _factory;
@@ -218,28 +214,22 @@ contract AcmeWidgetCo {
         widgetSerialMapping[_serial] = widgetCount; // Save index for serial #
 
         // HACK: Generalize to N bins if time allows
-        if ((_results & bin1Mask) == bin1Mask) {
+        // HACK: Figure out 2-D arrays if time allows
+        if ((_results & binMask[1]) == binMask[1]) {
             bin1Widgets.push(widgetCount);
-            bin1WidgetCount++;
             bin = 1;
-            count = bin1WidgetCount;
-        } else if ((_results & bin2Mask) == bin2Mask) {
+        } else if ((_results & binMask[2]) == binMask[2]) {
             bin2Widgets.push(widgetCount);
-            bin2WidgetCount++;
             bin = 2;
-            count = bin2WidgetCount;
-        } else if ((_results & bin3Mask) == bin3Mask) {
+        } else if ((_results & binMask[3]) == binMask[3]) {
             bin3Widgets.push(widgetCount);
-            bin3WidgetCount++;
             bin = 3;
-            count = bin3WidgetCount;
         } else {  // Widgets that don't match a bin are too low quality to sell
             bin = 0;
-            unsellableWidgetCount++;
-            count = unsellableWidgetCount;
         }
+        binWidgetCount[bin]++;
         widgetCount++;
-        emit NewTestedWidget(_serial, _factory, _testSite, _results, widgetCount, bin, count);
+        emit NewTestedWidget(_serial, _factory, _testSite, _results, widgetCount, bin, binWidgetCount[bin]);
         return widgetCount;
     }
 
@@ -250,29 +240,13 @@ contract AcmeWidgetCo {
     // Allow sales distributor to update the unit price of any of the bins
     function updateUnitPrice(uint8 _bin, uint256 _newPrice) public onlySalesDistributor {
         require((_bin > 0) && (_bin <=3), "Bin must be between 1 to 3, inclusive");
-        if (_bin == 1) {
-            bin1UnitPrice = _newPrice;
-        } else if (_bin == 2) {
-            bin2UnitPrice = _newPrice;
-        } else if (_bin == 3) {
-            bin3UnitPrice = _newPrice;
-        } else {
-            revert(); // Should never get here
-        }
+        binUnitPrice[_bin] = _newPrice;
         emit NewUnitPrice(_bin, _newPrice, msg.sender);
     }
 
     function updateBinMask(uint8 _bin, uint32 _newMask) public onlySalesDistributor {
         require((_bin > 0) && (_bin <=3), "Bin must be between 1 to 3, inclusive");
-        if (_bin == 1) {
-            bin1Mask = _newMask;
-        } else if (_bin == 2) {
-            bin2Mask = _newMask;
-        } else if (_bin == 3) {
-            bin3Mask = _newMask;
-        } else {
-            revert(); // Should never get here
-        }
+        binMask[_bin] = _newMask;
         emit NewBinMask(_bin, _newMask, msg.sender);
     }
 
@@ -280,35 +254,18 @@ contract AcmeWidgetCo {
     // Customer functions
     //-------------------------
     // HACK: Generalize to N widgets if time allows
-    function buyWidgets(uint8 _bin, uint32 _quantity) public onlyCustomer {
-        require(_quantity > 0);
+    function buyWidgets(uint8 _bin, uint32 _quantity) payable public onlyCustomer {
+        require(_quantity > 0, "Must purchase >0 widgets.");
         require((_bin > 0) && (_bin <=3), "Bin must be between 1 to 3, inclusive");
-        uint32 wCount;
-        uint32 lastSold;
-        uint256 uPrice;
-        if (_bin == 1) {
-            wCount = bin1WidgetCount;
-            lastSold = lastBin1WidgetSold;
-            uPrice = bin1UnitPrice;
-        } else if (_bin == 2) {
-            wCount = bin2WidgetCount;
-            lastSold = lastBin2WidgetSold;
-            uPrice = bin2UnitPrice;
-        } else if (_bin == 3) {
-            wCount = bin3WidgetCount;
-            lastSold = lastBin3WidgetSold;
-            uPrice = bin3UnitPrice;
-        } else {
-            revert(); // Should never get here
-        }
-        uint32 stock = sub(sub(wCount, lastSold), 1);
-        string err = "Insufficient stock. Max available in bin" + _bin + " is " + stock + " widgets.";
-        require((_quantity <= stock), err);
-        err = "Insufficient funds. Unit price is " + uPrice;
-        require((mul(uint256(_quantity), uPrice) <= msg.value), err);
+        uint32 wCount = binWidgetCount[_bin];
+        uint32 lastSold = lastWidgetSoldInBin[_bin];
+        uint256 uPrice = binUnitPrice[_bin];
+        uint32 stock = wCount.sub(lastSold).sub(1);
+        require((_quantity <= stock), "Insufficient stock.");
+        require((uint256(_quantity).mul(uPrice) <= msg.value), "Insufficient funds.");
 
         // HACK: Currently doesn't refund any excess if customer overpaid
-        WidgetOrderFill w;
+        WidgetOrderFill memory w;
         w.bin = _bin;
         w.firstIndex = lastSold + 1;
         w.lastIndex = lastSold + _quantity;
