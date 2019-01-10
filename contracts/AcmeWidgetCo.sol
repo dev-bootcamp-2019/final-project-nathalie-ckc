@@ -1,6 +1,6 @@
 pragma solidity ^0.4.24;
 
-// Imports go here
+import 'openzeppelin-solidity/contracts/math/SafeMath.sol';
 
 contract AcmeWidgetCo {
     //===========================================
@@ -275,6 +275,52 @@ contract AcmeWidgetCo {
         }
         emit NewBinMask(_bin, _newMask, msg.sender);
     }
+
+    //-------------------------
+    // Customer functions
+    //-------------------------
+    // HACK: Generalize to N widgets if time allows
+    function buyWidgets(uint8 _bin, uint32 _quantity) public onlyCustomer {
+        require(_quantity > 0);
+        require((_bin > 0) && (_bin <=3), "Bin must be between 1 to 3, inclusive");
+        uint32 wCount;
+        uint32 lastSold;
+        uint256 uPrice;
+        if (_bin == 1) {
+            wCount = bin1WidgetCount;
+            lastSold = lastBin1WidgetSold;
+            uPrice = bin1UnitPrice;
+        } else if (_bin == 2) {
+            wCount = bin2WidgetCount;
+            lastSold = lastBin2WidgetSold;
+            uPrice = bin2UnitPrice;
+        } else if (_bin == 3) {
+            wCount = bin3WidgetCount;
+            lastSold = lastBin3WidgetSold;
+            uPrice = bin3UnitPrice;
+        } else {
+            revert(); // Should never get here
+        }
+        uint32 stock = sub(sub(wCount, lastSold), 1);
+        string err = "Insufficient stock. Max available in bin" + _bin + " is " + stock + " widgets.";
+        require((_quantity <= stock), err);
+        err = "Insufficient funds. Unit price is " + uPrice;
+        require((mul(uint256(_quantity), uPrice) <= msg.value), err);
+
+        // HACK: Currently doesn't refund any excess if customer overpaid
+        WidgetOrderFill w;
+        w.bin = _bin;
+        w.firstIndex = lastSold + 1;
+        w.lastIndex = lastSold + _quantity;
+
+        // LEFT OFF HERE: Need to update lastBinXWidgetSold
+
+        customerWidgetMapping[msg.sender].push(w);
+
+        // TODO: Need to emit event about the sale
+    }
+
+
     // internal
     // private
 
