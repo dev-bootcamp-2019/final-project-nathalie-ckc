@@ -61,7 +61,9 @@ contract AcmeWidgetCo {
     uint32[] public bin2Widgets;
     uint32[] public bin3Widgets;
     uint32[4] public binWidgetCount;
-    uint32[4] public lastWidgetSoldInBin; // Start selling from 0, index of last sold in bin1
+    // HACK: Because using uint instead of int, widget[0] never really gets sold
+    // Deal with that later if time allows
+    uint32[4] public lastWidgetSoldInBin; // Index of last sold in bin
     mapping (address => WidgetOrderFill[]) public customerWidgetMapping; // Who owns each widget in widgetList
 
     //===========================================

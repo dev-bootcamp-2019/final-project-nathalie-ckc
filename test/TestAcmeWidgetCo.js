@@ -12,6 +12,9 @@ contract('AcmeWidgetCo', function(accounts) {
     const customer1 = accounts[4];
     const customer2 = accounts[5];
 
+    // From https://ethereum.stackexchange.com/questions/48627/how-to-catch-revert-error-in-truffle-test-javascript
+    let catchRevert = require("./exceptions.js").catchRevert;
+
 /*
     it("accounts[0] (deployer) should be an admin", async() => {
         const acmeWidgetCo = await AcmeWidgetCo.deployed();
@@ -103,14 +106,14 @@ contract('AcmeWidgetCo', function(accounts) {
     it("Test that the recorded widgets in the expected bins", async() => {
         const acmeWidgetCo = await AcmeWidgetCo.deployed();
 
-        const b1Count = await acmeWidgetCo.bin1WidgetCount();
+        const b1Count = await acmeWidgetCo.binWidgetCount(1);
         assert.equal(b1Count, 1, 'Bin1 should have 1 widget.');
 
         const b1W0 = await acmeWidgetCo.bin1Widgets(0);
         const widget1 = await acmeWidgetCo.widgetList(b1W0);
         assert.equal(widget1[0], 1234001, 'Widget1 should be the first in Bin1.');
 
-        const b2Count = await acmeWidgetCo.bin2WidgetCount();
+        const b2Count = await acmeWidgetCo.binWidgetCount(1);
         assert.equal(b2Count, 1, 'Bin2 should have 1 widget.');
 
         const b2W0 = await acmeWidgetCo.bin2Widgets(0);
@@ -160,6 +163,45 @@ contract('AcmeWidgetCo', function(accounts) {
         await acmeWidgetCo.updateBinMask(3, 0xFE000000, {from: salesdist1});
         const b3MaskAfter = await acmeWidgetCo.binMask(3);
         assert.equal(b3MaskAfter, 0xFE000000, "Bin3 mask should be set to 0xFE000000.");
+    })
+
+    it("Test that customer can only buy widgets that cost <= their msg.value.", async() => {
+        const acmeWidgetCo = await AcmeWidgetCo.deployed();
+
+        // Add a bunch of widgets to bin1
+        await acmeWidgetCo.recordWidgetTests(1234003, 1, 1, 0xFFFFFFFF, {from: tester1});
+        await acmeWidgetCo.recordWidgetTests(1234004, 1, 2, 0xFFFFFFFF, {from: tester1});
+        await acmeWidgetCo.recordWidgetTests(1234005, 2, 1, 0xFFFFFFFF, {from: tester1});
+        await acmeWidgetCo.recordWidgetTests(1234006, 2, 2, 0xFFFFFFFF, {from: tester1});
+
+        // Should not be able to buy widget
+        const lwBin1B4 = await acmeWidgetCo.lastWidgetSoldInBin(1);
+        assert (lwBin1B4, 0, "Should not have sold any Bin1 widgets yet.");
+        await catchRevert(acmeWidgetCo.buyWidgets(1, 2, {from: customer1, value: 100}));
+        const lwBin1After = await acmeWidgetCo.lastWidgetSoldInBin(1);
+        assert (lwBin1After, 0, "Should still not have sold any Bin1 widgets yet.");
+
+    })
+
+    it("Test customer can't buy more widgets than available even with sufficent msg.value.", async() => {
+        const acmeWidgetCo = await AcmeWidgetCo.deployed();
+
+        // Should not show any widgets as having been bought
+        const lwBin1B4 = await acmeWidgetCo.lastWidgetSoldInBin(1);
+        assert (lwBin1B4, 0, "Should not have sold any Bin1 widgets yet.");
+        await catchRevert(acmeWidgetCo.buyWidgets(1, 8, {from: customer1, value: 1700000000000000000}));
+        const lwBin1After = await acmeWidgetCo.lastWidgetSoldInBin(1);
+        assert (lwBin1After, 0, "Should still not have sold any Bin1 widgets yet.");
+    })
+
+    it("Test that customer can buy multiple widgets from same bin in 1 transaction.", async() => {
+        const acmeWidgetCo = await AcmeWidgetCo.deployed();
+
+        const lwBin1B4 = await acmeWidgetCo.lastWidgetSoldInBin(1);
+        assert (lwBin1B4, 0, "Should not have sold any Bin1 widgets yet.");
+        await acmeWidgetCo.buyWidgets(1, 3, {from: customer1, value: 600000000000000000});
+        const lwBin1After = await acmeWidgetCo.lastWidgetSoldInBin(1);
+        assert (lwBin1After, 3, "Should have sold widgets 1-3 from Bin1.");
     })
 
 /*
