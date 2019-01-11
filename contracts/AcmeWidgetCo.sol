@@ -76,6 +76,7 @@ contract AcmeWidgetCo {
     event NewTestedWidget(uint32 indexed _serial, uint8 indexed _factory, uint8 _testSite, uint32 _results, uint32 widgetCount, uint8 indexed bin, uint32 binCount);
     event NewUnitPrice(uint8 indexed _bin, uint256 _newPrice, address indexed _salesDistributor);
     event NewBinMask(uint8 indexed _bin, uint32 _newBinMask, address indexed _salesDistributor);
+    event WidgetSale(uint8 indexed _bin, uint32 _quantity, address indexed _customer, uint256 _totalAmtPaid);
 
     //===========================================
     // Modifiers
@@ -253,7 +254,7 @@ contract AcmeWidgetCo {
     //-------------------------
     // Customer functions
     //-------------------------
-    // HACK: Generalize to N widgets if time allows
+    // HACK: Generalize to N bins if time allows
     function buyWidgets(uint8 _bin, uint32 _quantity) payable public onlyCustomer {
         require(_quantity > 0, "Must purchase >0 widgets.");
         require((_bin > 0) && (_bin <=3), "Bin must be between 1 to 3, inclusive");
@@ -267,14 +268,13 @@ contract AcmeWidgetCo {
         // HACK: Currently doesn't refund any excess if customer overpaid
         WidgetOrderFill memory w;
         w.bin = _bin;
-        w.firstIndex = lastSold + 1;
-        w.lastIndex = lastSold + _quantity;
-
-        // LEFT OFF HERE: Need to update lastBinXWidgetSold
+        w.firstIndex = lastSold.add(1);
+        w.lastIndex = lastSold.add(_quantity);
 
         customerWidgetMapping[msg.sender].push(w);
+        lastWidgetSoldInBin[_bin] = w.lastIndex.add(1);
 
-        // TODO: Need to emit event about the sale
+        emit WidgetSale(_bin, _quantity, msg.sender, msg.value);
     }
 
 
