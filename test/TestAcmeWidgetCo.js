@@ -176,10 +176,10 @@ contract('AcmeWidgetCo', function(accounts) {
 
         // Should not be able to buy widget
         const lwBin1B4 = await acmeWidgetCo.lastWidgetSoldInBin(1);
-        assert (lwBin1B4, 0, "Should not have sold any Bin1 widgets yet.");
+        assert.equal(lwBin1B4, 0, "Should not have sold any Bin1 widgets yet.");
         await catchRevert(acmeWidgetCo.buyWidgets(1, 2, {from: customer1, value: 100}));
         const lwBin1After = await acmeWidgetCo.lastWidgetSoldInBin(1);
-        assert (lwBin1After, 0, "Should still not have sold any Bin1 widgets yet.");
+        assert.equal(lwBin1After, 0, "Should still not have sold any Bin1 widgets yet.");
 
     })
 
@@ -188,10 +188,10 @@ contract('AcmeWidgetCo', function(accounts) {
 
         // Should not show any widgets as having been bought
         const lwBin1B4 = await acmeWidgetCo.lastWidgetSoldInBin(1);
-        assert (lwBin1B4, 0, "Should not have sold any Bin1 widgets yet.");
+        assert.equal(lwBin1B4, 0, "Should not have sold any Bin1 widgets yet.");
         await catchRevert(acmeWidgetCo.buyWidgets(1, 8, {from: customer1, value: 1700000000000000000}));
         const lwBin1After = await acmeWidgetCo.lastWidgetSoldInBin(1);
-        assert (lwBin1After, 0, "Should still not have sold any Bin1 widgets yet.");
+        assert.equal(lwBin1After, 0, "Should still not have sold any Bin1 widgets yet.");
     })
 
     it("Test that customer can't buy when circuit breaker stops contract.", async() => {
@@ -212,10 +212,10 @@ contract('AcmeWidgetCo', function(accounts) {
         const acmeWidgetCo = await AcmeWidgetCo.deployed();
 
         const lwBin1B4 = await acmeWidgetCo.lastWidgetSoldInBin(1);
-        assert (lwBin1B4, 0, "Should not have sold any Bin1 widgets yet.");
+        assert.equal(lwBin1B4, 0, "Should not have sold any Bin1 widgets yet.");
         await acmeWidgetCo.buyWidgets(1, 3, {from: customer1, value: 600000000000000000});
         const lwBin1After = await acmeWidgetCo.lastWidgetSoldInBin(1);
-        assert (lwBin1After, 3, "Should have sold widgets 1-3 from Bin1.");
+        assert.equal(lwBin1After, 3, "Should have sold widgets 1-3 from Bin1.");
     })
 
 /*

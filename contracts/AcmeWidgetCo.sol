@@ -29,7 +29,7 @@ contract AcmeWidgetCo {
     // Contract variables
     //===========================================
     // Circuit breaker
-    bool stopContract;
+    bool public stopContract;
 
     // Lists of users by role
     mapping (address => bool) public adminList;
@@ -297,7 +297,7 @@ contract AcmeWidgetCo {
         w.lastIndex = lastSold.add(_quantity);
 
         customerWidgetMapping[msg.sender].push(w);
-        lastWidgetSoldInBin[_bin] = w.lastIndex.add(1);
+        lastWidgetSoldInBin[_bin] = w.lastIndex;
 
         emit WidgetSale(_bin, _quantity, msg.sender, msg.value);
     }
