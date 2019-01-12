@@ -28,6 +28,8 @@ contract AcmeWidgetCo {
     //===========================================
     // Contract variables
     //===========================================
+    // Circuit breaker
+    bool stopContract;
 
     // Lists of users by role
     mapping (address => bool) public adminList;
@@ -115,6 +117,14 @@ contract AcmeWidgetCo {
         _;
     }
 
+    // Circuit breaker
+    modifier stopInEmergency {
+        if (!stopContract) _;
+    }
+
+    modifier onlyInEmergency {
+        if (stopContract) _;
+    }
 
 
     // Functions - Within a grouping, place the view and pure functions last
@@ -123,6 +133,9 @@ contract AcmeWidgetCo {
     // constructor
     //===========================================
     constructor() public {
+        // Circuit breaker
+        stopContract = false;
+
         // The first admin is the deployer of the contract
         adminList[msg.sender] = true;
 
@@ -145,6 +158,16 @@ contract AcmeWidgetCo {
     //-------------------------
     // Admin functions
     //-------------------------
+    // Circuit breaker
+    function beginEmergency() public onlyAdmin {
+        stopContract = true;
+    }
+
+    function endEmergency() public onlyAdmin {
+        stopContract = false;
+    }
+
+    // Functions to add to user lists
     function registerAdmin(address _newAdmin) public onlyAdmin {
         adminList[_newAdmin] = true;
         emit NewAdmin(_newAdmin);
@@ -257,7 +280,7 @@ contract AcmeWidgetCo {
     // Customer functions
     //-------------------------
     // HACK: Generalize to N bins if time allows
-    function buyWidgets(uint8 _bin, uint32 _quantity) payable public onlyCustomer {
+    function buyWidgets(uint8 _bin, uint32 _quantity) payable public onlyCustomer stopInEmergency {
         require(_quantity > 0, "Must purchase >0 widgets.");
         require((_bin > 0) && (_bin <=3), "Bin must be between 1 to 3, inclusive");
         uint32 wCount = binWidgetCount[_bin];
