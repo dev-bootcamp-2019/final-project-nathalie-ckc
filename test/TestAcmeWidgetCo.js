@@ -1,7 +1,8 @@
 //const Web3 = require('web3');
-var Web3 = require('web3');
-var web3 = new Web3('ws://localhost:8546');
-var AcmeWidgetCo = artifacts.require('AcmeWidgetCo');
+const Web3 = require('web3');
+const web3 = new Web3('ws://localhost:8546');
+const truffleAssert = require('truffle-assertions');
+const AcmeWidgetCo = artifacts.require('AcmeWidgetCo');
 
 contract('AcmeWidgetCo', function(accounts) {
 
@@ -13,7 +14,7 @@ contract('AcmeWidgetCo', function(accounts) {
     const customer2 = accounts[5];
 
     // From https://ethereum.stackexchange.com/questions/48627/how-to-catch-revert-error-in-truffle-test-javascript
-    let catchRevert = require("./exceptions.js").catchRevert;
+    const catchRevert = require("./exceptions.js").catchRevert;
 
 /*
     it("accounts[0] (deployer) should be an admin", async() => {
@@ -28,26 +29,41 @@ contract('AcmeWidgetCo', function(accounts) {
     it("Test adding admin, tester, salesdist, customers", async() => {
         const acmeWidgetCo = await AcmeWidgetCo.deployed();
 
-        await acmeWidgetCo.registerAdmin(admin1, {from: deployer});
+        const tx = await acmeWidgetCo.registerAdmin(admin1, {from: deployer});
+        truffleAssert.eventEmitted(tx, 'NewAdmin', (ev) => {
+          return ev._newAdminRegistered === admin1;
+        });
         const isInList = await acmeWidgetCo.adminList(admin1);
         assert.equal(isInList, true, 'accounts[1] (admin1) is not an admin.');
 
         const notInList = await acmeWidgetCo.adminList(tester1);
         assert.equal(notInList, false, 'accounts[2] (tester1) should not be an admin, but is.');
 
-        await acmeWidgetCo.registerTester(tester1, {from: admin1});
+        const tx1 = await acmeWidgetCo.registerTester(tester1, {from: admin1});
+        truffleAssert.eventEmitted(tx1, 'NewTester', (ev) => {
+          return ev._newTesterRegistered === tester1;
+        });
         const isInList1 = await acmeWidgetCo.testerList(tester1);
         assert.equal(isInList1, true, 'admin1 could not add tester1 to testerList.');
 
-        await acmeWidgetCo.registerSalesDistributor(salesdist1, {from: admin1});
+        const tx2 = await acmeWidgetCo.registerSalesDistributor(salesdist1, {from: admin1});
+        truffleAssert.eventEmitted(tx2, 'NewSalesDistributor', (ev) => {
+          return ev._newSalesDistributorRegistered === salesdist1;
+        });
         const isInList2 = await acmeWidgetCo.salesDistributorList(salesdist1);
         assert.equal(isInList2, true, 'admin1 could not add salesdist1 to salesDistributorList.');
 
-        await acmeWidgetCo.registerCustomer(customer1, {from: admin1});
+        const tx3 = await acmeWidgetCo.registerCustomer(customer1, {from: admin1});
+        truffleAssert.eventEmitted(tx3, 'NewCustomer', (ev) => {
+          return ev._newCustomerRegistered === customer1;
+        });
         const isInList3 = await acmeWidgetCo.customerList(customer1);
         assert.equal(isInList3, true, 'admin1 could not add customer1 to customerList.');
 
-        await acmeWidgetCo.registerCustomer(customer2, {from: admin1});
+        const tx4 = await acmeWidgetCo.registerCustomer(customer2, {from: admin1});
+        truffleAssert.eventEmitted(tx4, 'NewCustomer', (ev) => {
+          return ev._newCustomerRegistered === customer2;
+        });
         const isInList4 = await acmeWidgetCo.customerList(customer2);
         assert.equal(isInList4, true, 'admin1 could not add customer2 to customerList.');
     })
@@ -56,19 +72,32 @@ contract('AcmeWidgetCo', function(accounts) {
     it("Test admin populating list of factories and test sites", async() => {
         const acmeWidgetCo = await AcmeWidgetCo.deployed();
 
-        await acmeWidgetCo.addFactory("Factory1 Shanghai", {from: admin1});
+        const tx9 = await acmeWidgetCo.addFactory("Factory1 Shanghai", {from: admin1});
+        truffleAssert.eventEmitted(tx9, 'NewFactory', (ev) => {
+          return ev._factoryCount == 1 && ev._factory === "Factory1 Shanghai";
+          // HACK: Not sure why === 1 doesn't work, but had to use == 1.
+        });
         const fact1Position = await acmeWidgetCo.factoryMapping(web3.utils.soliditySha3("Factory1 Shanghai"));
         assert.equal(fact1Position.toNumber(), 0, 'Factory1 Shanghai is not in the list.');
 
-        await acmeWidgetCo.addFactory("Factory2 Taipei", {from: admin1});
+        const tx1 = await acmeWidgetCo.addFactory("Factory2 Taipei", {from: admin1});
+        truffleAssert.eventEmitted(tx1, 'NewFactory', (ev) => {
+          return ((ev._factoryCount == 2) && (ev._factory === "Factory2 Taipei"));
+        });
         const fact2Position = await acmeWidgetCo.factoryMapping(web3.utils.soliditySha3("Factory2 Taipei"));
         assert.equal(fact2Position.toNumber(), 1, 'Factory2 Taipei is not in the list.');
 
-        await acmeWidgetCo.addTestSite("TS1 Singapore", {from: admin1});
+        const tx2 = await acmeWidgetCo.addTestSite("TS1 Singapore", {from: admin1});
+        truffleAssert.eventEmitted(tx2, 'NewTestSite', (ev) => {
+          return ((ev._testSiteCount == 1) && (ev._testSite === "TS1 Singapore"));
+        });
         const ts1Position = await acmeWidgetCo.testSiteMapping(web3.utils.soliditySha3("TS1 Singapore"));
         assert.equal(ts1Position.toNumber(), 0, 'TS1 Singapore is not in the list.');
 
-        await acmeWidgetCo.addTestSite("TS2 Osaka", {from: admin1});
+        const tx3 = await acmeWidgetCo.addTestSite("TS2 Osaka", {from: admin1});
+        truffleAssert.eventEmitted(tx3, 'NewTestSite', (ev) => {
+          return ((ev._testSiteCount == 2) && (ev._testSite === "TS2 Osaka"));
+        });
         const ts2Position = await acmeWidgetCo.testSiteMapping(web3.utils.soliditySha3("TS2 Osaka"));
         assert.equal(ts2Position.toNumber(), 1, 'TS2 Osaka is not in the list.');
     })
@@ -76,7 +105,17 @@ contract('AcmeWidgetCo', function(accounts) {
     it("Test tester recording widget result", async() => {
         const acmeWidgetCo = await AcmeWidgetCo.deployed();
 
-        await acmeWidgetCo.recordWidgetTests(1234001, 1, 1, 0xFFFFFFFF, {from: tester1});
+        const tx = await acmeWidgetCo.recordWidgetTests(1234001, 1, 1, 0xFFFFFFFF, {from: tester1});
+        truffleAssert.eventEmitted(tx, 'NewTestedWidget', (ev) => {
+          return ((ev._serial == 1234001) &&
+            (ev._factory == 1) &&
+            (ev._testSite == 1) &&
+            (ev._results == 0xFFFFFFFF) &&
+            (ev._widgetCount == 1) &&
+            (ev._bin == 1) &&
+            (ev._binCount == 1)
+          );
+        });
         const widget1 = await acmeWidgetCo.widgetList(0);
         assert.equal(widget1[0], 1234001, 'Widget1 incorrect serial number.');
         assert.equal(widget1[1], 1, 'Widget1 incorrect factory.');
@@ -87,15 +126,25 @@ contract('AcmeWidgetCo', function(accounts) {
     it("Test that additional factory and test sites are usable", async() => {
         const acmeWidgetCo = await AcmeWidgetCo.deployed();
 
-        await acmeWidgetCo.addFactory("Factory3 Delhi", {from: deployer});
+        const tx = await acmeWidgetCo.addFactory("Factory3 Delhi", {from: deployer});
         const fact3Position = await acmeWidgetCo.factoryMapping(web3.utils.soliditySha3("Factory3 Delhi"));
         assert.equal(fact3Position.toNumber(), 2, 'Factory3 Delhi is not in the list.');
 
-        await acmeWidgetCo.addTestSite("TS3 Austin", {from: deployer});
+        const tx1 = await acmeWidgetCo.addTestSite("TS3 Austin", {from: deployer});
         const ts3Position = await acmeWidgetCo.testSiteMapping(web3.utils.soliditySha3("TS3 Austin"));
         assert.equal(ts3Position.toNumber(), 2, 'TS3 is not in the list.');
 
-        await acmeWidgetCo.recordWidgetTests(1234002, 2, 2, 0xFFFF1234, {from: tester1});
+        const tx2 = await acmeWidgetCo.recordWidgetTests(1234002, 2, 2, 0xFFFF1234, {from: tester1});
+        truffleAssert.eventEmitted(tx2, 'NewTestedWidget', (ev) => {
+          return ((ev._serial == 1234002) &&
+            (ev._factory == 2) &&
+            (ev._testSite == 2) &&
+            (ev._results == 0xFFFF1234) &&
+            (ev._widgetCount == 2) &&
+            (ev._bin == 2) &&
+            (ev._binCount == 1)
+          );
+        });
         const widget2 = await acmeWidgetCo.widgetList(1);
         assert.equal(widget2[0], 1234002, 'Widget2 incorrect serial number.');
         assert.equal(widget2[1], 2, 'Widget2 incorrect factory.');
@@ -126,7 +175,13 @@ contract('AcmeWidgetCo', function(accounts) {
 
         const b1PriceB4 = await acmeWidgetCo.binUnitPrice(1);
         assert.equal(b1PriceB4, 100000000000000000, 'Bin1 price should be set to 100000000000000000 wei by constructor.');
-        await acmeWidgetCo.updateUnitPrice(1, 200000000000000000, {from: salesdist1});
+        const tx = await acmeWidgetCo.updateUnitPrice(1, 200000000000000000, {from: salesdist1});
+        truffleAssert.eventEmitted(tx, 'NewUnitPrice', (ev) => {
+          return ((ev._bin == 1) &&
+            (ev._newPrice == 200000000000000000) &&
+            (ev._salesDistributor === salesdist1)
+          );
+        });
         const b1PriceAfter = await acmeWidgetCo.binUnitPrice(1);
         assert.equal(b1PriceAfter, 200000000000000000, 'Bin1 price should be set to 200000000000000000 wei.');
 
@@ -148,7 +203,13 @@ contract('AcmeWidgetCo', function(accounts) {
 
         const b1MaskB4 = await acmeWidgetCo.binMask(1);
         assert.equal(b1MaskB4, 0xFFFFFFFF, "Bin1 mask should be set to 0xFFFFFFFF by constructor.");
-        await acmeWidgetCo.updateBinMask(1, 0xFFFFFFFE, {from: salesdist1});
+        const tx = await acmeWidgetCo.updateBinMask(1, 0xFFFFFFFE, {from: salesdist1});
+        truffleAssert.eventEmitted(tx, 'NewBinMask', (ev) => {
+          return ((ev._bin == 1) &&
+            (ev._newBinMask == 0xFFFFFFFE) &&
+            (ev._salesDistributor === salesdist1)
+          );
+        });
         const b1MaskAfter = await acmeWidgetCo.binMask(1);
         assert.equal(b1MaskAfter, 0xFFFFFFFE, "Bin1 mask should be set to 0xFFFFFFFE.");
 
@@ -213,7 +274,14 @@ contract('AcmeWidgetCo', function(accounts) {
 
         const lwBin1B4 = await acmeWidgetCo.lastWidgetSoldInBin(1);
         assert.equal(lwBin1B4, 0, "Should not have sold any Bin1 widgets yet.");
-        await acmeWidgetCo.buyWidgets(1, 3, {from: customer1, value: 600000000000000000});
+        tx = await acmeWidgetCo.buyWidgets(1, 3, {from: customer1, value: 600000000000000000});
+        truffleAssert.eventEmitted(tx, 'WidgetSale', (ev) => {
+          return ((ev._bin == 1) &&
+            (ev._quantity == 3) &&
+            (ev._customer === customer1) &&
+            (ev._totalAmtPaid == 600000000000000000)
+          );
+        });
         const lwBin1After = await acmeWidgetCo.lastWidgetSoldInBin(1);
         assert.equal(lwBin1After, 3, "Should have sold widgets 1-3 from Bin1.");
     })

@@ -75,9 +75,9 @@ contract AcmeWidgetCo {
     event NewTester(address indexed _newTesterRegistered);
     event NewSalesDistributor(address indexed _newSalesDistributorRegistered);
     event NewCustomer(address indexed _newCustomerRegistered);
-    event NewFactory(uint8 indexed factoryCount, string _factory);
-    event NewTestSite(uint8 indexed testSiteCount, string _testSite);
-    event NewTestedWidget(uint32 indexed _serial, uint8 indexed _factory, uint8 _testSite, uint32 _results, uint32 widgetCount, uint8 indexed bin, uint32 binCount);
+    event NewFactory(uint8 indexed _factoryCount, string _factory);
+    event NewTestSite(uint8 indexed _testSiteCount, string _testSite);
+    event NewTestedWidget(uint32 indexed _serial, uint8 indexed _factory, uint8 _testSite, uint32 _results, uint32 _widgetCount, uint8 indexed _bin, uint32 _binCount);
     event NewUnitPrice(uint8 indexed _bin, uint256 _newPrice, address indexed _salesDistributor);
     event NewBinMask(uint8 indexed _bin, uint32 _newBinMask, address indexed _salesDistributor);
     event WidgetSale(uint8 indexed _bin, uint32 _quantity, address indexed _customer, uint256 _totalAmtPaid);
