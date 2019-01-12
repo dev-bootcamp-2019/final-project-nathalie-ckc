@@ -194,6 +194,20 @@ contract('AcmeWidgetCo', function(accounts) {
         assert (lwBin1After, 0, "Should still not have sold any Bin1 widgets yet.");
     })
 
+    it("Test that customer can't buy when circuit breaker stops contract.", async() => {
+        const acmeWidgetCo = await AcmeWidgetCo.deployed();
+
+        const stoppedStateB4 = await acmeWidgetCo.stopContract();
+        assert.equal(stoppedStateB4, false, "Contract should not be in stopped state yet.");
+        await acmeWidgetCo.beginEmergency({from: admin1});
+        await acmeWidgetCo.buyWidgets(1, 3, {from: customer1, value: 600000000000000000});
+        const lwBin1After = await acmeWidgetCo.lastWidgetSoldInBin(1);
+        assert.equal(lwBin1After, 0, "Should not have sold any Bin1 widgets yet.");
+        await acmeWidgetCo.endEmergency({from: admin1});
+        const stoppedStateAfter = await acmeWidgetCo.stopContract();
+        assert.equal(stoppedStateAfter, false, "Contract should not be in stopped state any more.");
+    })
+
     it("Test that customer can buy multiple widgets from same bin in 1 transaction.", async() => {
         const acmeWidgetCo = await AcmeWidgetCo.deployed();
 
