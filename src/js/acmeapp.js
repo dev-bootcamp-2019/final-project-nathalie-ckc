@@ -3,23 +3,6 @@ AcmeApp = {
   contracts: {},
 
   init: async function() {
-    // Load pets.
-    $.getJSON('../pets.json', function(data) {
-      var petsRow = $('#petsRow');
-      var petTemplate = $('#petTemplate');
-
-      for (i = 0; i < data.length; i ++) {
-        petTemplate.find('.panel-title').text(data[i].name);
-        petTemplate.find('img').attr('src', data[i].picture);
-        petTemplate.find('.pet-breed').text(data[i].breed);
-        petTemplate.find('.pet-age').text(data[i].age);
-        petTemplate.find('.pet-location').text(data[i].location);
-        petTemplate.find('.btn-adopt').attr('data-id', data[i].id);
-
-        petsRow.append(petTemplate.html());
-      }
-    });
-
     return await AcmeApp.initWeb3();
   },
 
@@ -56,32 +39,30 @@ AcmeApp = {
       // Set the provider for our contract
       AcmeApp.contracts.AcmeWidgetCo.setProvider(AcmeApp.web3Provider);
       // Use our contract to retrieve and mark the adopted pets
-      return AcmeApp.markAdopted();
+      return AcmeApp.displayCurrentAccount();
     })
 
-    return AcmeApp.bindEvents();
+    //return AcmeApp.bindEvents();
   },
 
-  bindEvents: function() {
+  /*bindEvents: function() {
     $(document).on('click', '.btn-register-admin', AcmeApp.handleRegisterAdmin);
-  },
+  },*/
 
-  markAdopted: function(adopters, account) {
-    var acmeInstance;
-
-    AcmeApp.contracts.AcmeWidgetCo.deployed().then(function(instance) {
-      acmeInstance = instance;
-      return acmeInstance.getAdopters.call();
-    }).then(function(adopters) {
-      for (i = 0; i < adopters.length; i++) {
-        if (adopters[i] !== '0x0000000000000000000000000000000000000000') {
-          $('.panel-pet').eq(i).find('button').text('Success').attr('disabled', true);
-        }
+  displayCurrentAccount: function() {
+    web3.eth.getAccounts(function(error, accounts) {
+      if (error) {
+        console.log(error);
       }
-    }).catch(function(err) {
-      console.log(err.message);
+
+      // [0] is always whatever the active account is in Metamask
+      var account = accounts[0];
+
+      var currAccount = $('#curr-acct-is');
+      currAccount.text(account);
+      console.log("Account is", account);
     });
-  },
+  }/*,
 
   handleRegisterAdmin: function(event) {
     event.preventDefault();
@@ -109,7 +90,7 @@ AcmeApp = {
         console.log(err, message);
       });
     });
-  }
+  }*/
 
 };
 
