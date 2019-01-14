@@ -172,21 +172,25 @@ contract AcmeWidgetCo {
 
     // Functions to add to user lists
     function registerAdmin(address _newAdmin) public onlyAdmin {
+        require(addr2Role[_newAdmin] == 0);
         addr2Role[_newAdmin] = 1;
         emit NewAdmin(_newAdmin);
     }
 
     function registerTester(address _newTester) public onlyAdmin {
+        require(addr2Role[_newTester] == 0);
         addr2Role[_newTester] = 2;
         emit NewTester(_newTester);
     }
 
     function registerSalesDistributor(address _newSalesDistributor) public onlyAdmin {
+        require(addr2Role[_newSalesDistributor] == 0);
         addr2Role[_newSalesDistributor] = 3;
         emit NewSalesDistributor(_newSalesDistributor);
     }
 
     function registerCustomer(address _newCustomer) public onlyAdmin {
+        require(addr2Role[_newCustomer] == 0);
         addr2Role[_newCustomer] = 4;
         emit NewCustomer(_newCustomer);
     }

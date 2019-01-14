@@ -64,6 +64,11 @@ contract('AcmeWidgetCo', function(accounts) {
         assert.equal(role4, 4, 'admin1 could not register customer2 as a Customer.');
     })
 
+    it("Test that a registered account can't be registered again.", async() => {
+        const acmeWidgetCo = await AcmeWidgetCo.deployed();
+        
+        await catchRevert(acmeWidgetCo.registerTester(tester1, {from: admin1}));
+    })
 
     it("Test admin populating list of factories and test sites", async() => {
         const acmeWidgetCo = await AcmeWidgetCo.deployed();
