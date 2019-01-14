@@ -38,18 +38,19 @@ AcmeApp = {
       AcmeApp.contracts.AcmeWidgetCo = TruffleContract(AcmeArtifact);
       // Set the provider for our contract
       AcmeApp.contracts.AcmeWidgetCo.setProvider(AcmeApp.web3Provider);
-      // Use our contract to retrieve and mark the adopted pets
       return AcmeApp.displayCurrentAccount();
     })
 
-    //return AcmeApp.bindEvents();
+    return AcmeApp.bindEvents();
   },
 
-  /*bindEvents: function() {
-    $(document).on('click', '.btn-register-admin', AcmeApp.handleRegisterAdmin);
-  },*/
+  bindEvents: function() {
+    $(document).on('click', '.login-btn', AcmeApp.handleLogin);
+  },
 
   displayCurrentAccount: function() {
+    $('#login-screen').show();
+    $('#admin-screen').hide();
     web3.eth.getAccounts(function(error, accounts) {
       if (error) {
         console.log(error);
@@ -58,16 +59,15 @@ AcmeApp = {
       // [0] is always whatever the active account is in Metamask
       var account = accounts[0];
 
-      var currAccount = $('#curr-acct-is');
+      var currAccount = $('.curr-acct-is');
       currAccount.text(account);
-      console.log("Account is", account);
+      //console.log("Account is", account);
     });
-  }/*,
+  },
 
-  handleRegisterAdmin: function(event) {
+  handleLogin: function(event) {
     event.preventDefault();
-
-    var newAdminAddress = parseInt($(event.target).data('id'));
+    console.log("HELLO")
 
     var acmeInstance;
 
@@ -79,18 +79,27 @@ AcmeApp = {
       // [0] is always whatever the active account is in Metamask
       var account = accounts[0];
 
+      console.log("BANANA")
       AcmeApp.contracts.AcmeWidgetCo.deployed().then(function(instance) {
+        console.log("CHEWY");
         acmeInstance = instance;
-
+        console.log("instance: ", instance);
         // Execute adopt as a transaction by sending account
-        return acmeInstance.registerAdmin(newAdminAddress, {from: account});
+        return acmeInstance;
       }).then(function(result) {
-        return AcmeApp.markAdopted();
+        console.log("widgetCount: ", result);
+        if (result == 1) {
+          $('#login-screen').hide();
+          $('#admin-screen').show();
+        } else {
+          console.log("result wasn't 1. result is: ", result);
+        }
       }).catch(function(err) {
+        console.log("BOOGEY");
         console.log(err, message);
       });
     });
-  }*/
+  }
 
 };
 
