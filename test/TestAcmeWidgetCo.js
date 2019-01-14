@@ -16,14 +16,13 @@ contract('AcmeWidgetCo', function(accounts) {
     // From https://ethereum.stackexchange.com/questions/48627/how-to-catch-revert-error-in-truffle-test-javascript
     const catchRevert = require("./exceptions.js").catchRevert;
 
-/*
     it("accounts[0] (deployer) should be an admin", async() => {
         const acmeWidgetCo = await AcmeWidgetCo.deployed();
 
-        const isInList = await acmeWidgetCo.adminList(deployer);
-        assert.equal(isInList, true, 'accounts[0] (deployer) is not an admin.');
+        const role = await acmeWidgetCo.addr2Role(deployer);
+        assert.equal(role, 1, 'accounts[0] (deployer) is not an admin.');
 	  })
-*/
+
 
 
     it("Test adding admin, tester, salesdist, customers", async() => {
@@ -33,39 +32,36 @@ contract('AcmeWidgetCo', function(accounts) {
         truffleAssert.eventEmitted(tx, 'NewAdmin', (ev) => {
           return ev._newAdminRegistered === admin1;
         });
-        const isInList = await acmeWidgetCo.adminList(admin1);
-        assert.equal(isInList, true, 'accounts[1] (admin1) is not an admin.');
-
-        const notInList = await acmeWidgetCo.adminList(tester1);
-        assert.equal(notInList, false, 'accounts[2] (tester1) should not be an admin, but is.');
+        const role = await acmeWidgetCo.addr2Role(admin1);
+        assert.equal(role, 1, 'accounts[1] (admin1) is not an admin.');
 
         const tx1 = await acmeWidgetCo.registerTester(tester1, {from: admin1});
         truffleAssert.eventEmitted(tx1, 'NewTester', (ev) => {
           return ev._newTesterRegistered === tester1;
         });
-        const isInList1 = await acmeWidgetCo.testerList(tester1);
-        assert.equal(isInList1, true, 'admin1 could not add tester1 to testerList.');
+        const role1 = await acmeWidgetCo.addr2Role(tester1);
+        assert.equal(role1, 2, 'admin1 could not register tester1 as a Tester.');
 
         const tx2 = await acmeWidgetCo.registerSalesDistributor(salesdist1, {from: admin1});
         truffleAssert.eventEmitted(tx2, 'NewSalesDistributor', (ev) => {
           return ev._newSalesDistributorRegistered === salesdist1;
         });
-        const isInList2 = await acmeWidgetCo.salesDistributorList(salesdist1);
-        assert.equal(isInList2, true, 'admin1 could not add salesdist1 to salesDistributorList.');
+        const role2 = await acmeWidgetCo.addr2Role(salesdist1);
+        assert.equal(role2, 3, 'admin1 could not register salesdist1 as a Sales Distributor.');
 
         const tx3 = await acmeWidgetCo.registerCustomer(customer1, {from: admin1});
         truffleAssert.eventEmitted(tx3, 'NewCustomer', (ev) => {
           return ev._newCustomerRegistered === customer1;
         });
-        const isInList3 = await acmeWidgetCo.customerList(customer1);
-        assert.equal(isInList3, true, 'admin1 could not add customer1 to customerList.');
+        const role3 = await acmeWidgetCo.addr2Role(customer1);
+        assert.equal(role3, 4, 'admin1 could not register customer1 as a Customer.');
 
         const tx4 = await acmeWidgetCo.registerCustomer(customer2, {from: admin1});
         truffleAssert.eventEmitted(tx4, 'NewCustomer', (ev) => {
           return ev._newCustomerRegistered === customer2;
         });
-        const isInList4 = await acmeWidgetCo.customerList(customer2);
-        assert.equal(isInList4, true, 'admin1 could not add customer2 to customerList.');
+        const role4 = await acmeWidgetCo.addr2Role(customer2);
+        assert.equal(role4, 4, 'admin1 could not register customer2 as a Customer.');
     })
 
 
