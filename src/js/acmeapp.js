@@ -48,12 +48,20 @@ AcmeApp = {
     $(document).on('click', '.login-btn', AcmeApp.handleLogin);
   },
 
+  regAdmin: function() {
+    console.log("new-admin:", $('#new-admin').val());
+  },
+
   displayCurrentAccount: function() {
     $('#login-screen').show();
-    $('#admin-screen').hide();
+    $('#admin-screen').show();
+    $('#tester-screen').show();
+    $('#salesdist-screen').show();
+    $('#customer-screen').show();
+    /*$('#admin-screen').hide();
     $('#tester-screen').hide();
     $('#salesdist-screen').hide();
-    $('#customer-screen').hide();
+    $('#customer-screen').hide();*/
     web3.eth.getAccounts(function(error, accounts) {
       if (error) {
         console.log(error);

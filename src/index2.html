@@ -23,9 +23,33 @@
       </div>
 
       <div id="admin-screen">
-        <h1>Acme Widget Company</h1>
-        <h2>Admin screen for account</h2>
-        <p class="curr-acct-is"></p>
+        <div>
+          <h1>Acme Widget Company</h1>
+          <h2>Admin screen for account</h2>
+          <p class="curr-acct-is"></p>
+        </div>
+        <form>
+          <div class="form-group">
+            Register an Admin
+            <input type="text" class="form-control" id="new-admin" placeholder="Enter Ethereum address of new Admin">
+            <button id="reg-admin" class="btn btn-primary" onclick="AcmeApp.regAdmin(); return false;">Register</button>
+          </div>
+          <div class="row form-group">
+            Register a Tester
+            <input type="text" class="form-control" id="new-tester" placeholder="Enter Ethereum address of new Tester">
+            <button id="reg-tester" class="btn btn-primary reg-tester-btn">Register</button>
+          </div>
+        </form>
+        <ul>
+            <li class="list-group-item">Register a Sales Distributor</li>
+            <li class="list-group-item">Register a Customer</li>
+            <li class="list-group-item">Add a Factory</li>
+            <li class="list-group-item">Add a Test Site</li>
+            <li class="list-group-item alert alert-danger">Emergency mode: Activate</li>
+            <li class="list-group-item alert alert-success">Emergency mode: De-activate</li>
+          </ul>
+
+
       </div>
 
       <div id="tester-screen">
