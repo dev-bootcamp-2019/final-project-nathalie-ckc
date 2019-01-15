@@ -51,6 +51,9 @@ AcmeApp = {
   displayCurrentAccount: function() {
     $('#login-screen').show();
     $('#admin-screen').hide();
+    $('#tester-screen').hide();
+    $('#salesdist-screen').hide();
+    $('#customer-screen').hide();
     web3.eth.getAccounts(function(error, accounts) {
       if (error) {
         console.log(error);
@@ -82,13 +85,13 @@ AcmeApp = {
         acmeInstance = instance;
         return acmeInstance.addr2Role(account);
       }).then(function(result) {
-        console.log("addr2Role(account) ", result.toNumber());
-        if (result.toNumber() == 1) {
-          $('#login-screen').hide();
-          $('#admin-screen').show();
-        } else {
-          console.log("result wasn't 1. result is: ", result);
-        }
+        var role = result.toNumber();
+        console.log("addr2Role(account) ", role);
+        $('#login-screen').hide();
+        (role == 1) ? $('#admin-screen').show() : $('#admin-screen').hide();
+        (role == 2) ? $('#tester-screen').show() : $('#tester-screen').hide();
+        (role == 3) ? $('#salesdist-screen').show() : $('#salesdist-screen').hide();
+        (role == 3) ? $('#customer-screen').show() : $('#customer-screen').hide();
       }).catch(function(err) {
         console.log(err, message);
       });
