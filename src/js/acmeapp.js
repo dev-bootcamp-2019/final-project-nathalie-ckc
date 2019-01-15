@@ -67,7 +67,6 @@ AcmeApp = {
 
   handleLogin: function(event) {
     event.preventDefault();
-    console.log("HELLO")
 
     var acmeInstance;
 
@@ -79,23 +78,18 @@ AcmeApp = {
       // [0] is always whatever the active account is in Metamask
       var account = accounts[0];
 
-      console.log("BANANA")
       AcmeApp.contracts.AcmeWidgetCo.deployed().then(function(instance) {
-        console.log("CHEWY");
         acmeInstance = instance;
-        console.log("instance: ", instance);
-        // Execute adopt as a transaction by sending account
-        return acmeInstance;
+        return acmeInstance.addr2Role(account);
       }).then(function(result) {
-        console.log("widgetCount: ", result);
-        if (result == 1) {
+        console.log("addr2Role(account) ", result.toNumber());
+        if (result.toNumber() == 1) {
           $('#login-screen').hide();
           $('#admin-screen').show();
         } else {
           console.log("result wasn't 1. result is: ", result);
         }
       }).catch(function(err) {
-        console.log("BOOGEY");
         console.log(err, message);
       });
     });
