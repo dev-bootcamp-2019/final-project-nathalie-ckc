@@ -48,31 +48,53 @@ AcmeApp = {
     $(document).on('click', '.login-btn', AcmeApp.handleLogin);
   },
 
-  regAdmin: function() {
-    console.log("new-admin:", $('#new-admin').val());
+  regUser: function(role) {
+    web3.eth.getAccounts(function(error, accounts) {
+      if (error) {
+        console.log(error);
+      }
+
+      AcmeApp.contracts.AcmeWidgetCo.deployed().then(function(acmeInstance) {
+        switch(role) {
+          case 1:
+            console.log("new-admin:", $('#new-admin').val());
+            return acmeInstance.registerAdmin($('#new-admin').val(), {from:accounts[0]});
+          case 2:
+            console.log("new-tester:", $('#new-tester').val());
+            return acmeInstance.registerTester($('#new-tester').val(), {from:accounts[0]});
+          case 3:
+            console.log("new-salesdist:", $('#new-salesdist').val());
+            return acmeInstance.registerSalesDistributor($('#new-salesdist').val(), {from:accounts[0]});
+          case 4:
+            console.log("new-customer:", $('#new-customer').val());
+            return acmeInstance.registerCustomer($('#new-customer').val(), {from:accounts[0]});
+          default:
+            console.log("Invalid role specified when calling regUser().");
+        }
+      }).catch(function(err) {
+        console.log(err, message);
+      });
+    });
   },
+
 
   displayCurrentAccount: function() {
     $('#login-screen').show();
-    $('#admin-screen').show();
+    /*$('#admin-screen').show();
     $('#tester-screen').show();
     $('#salesdist-screen').show();
-    $('#customer-screen').show();
-    /*$('#admin-screen').hide();
+    $('#customer-screen').show();*/
+    $('#admin-screen').hide();
     $('#tester-screen').hide();
     $('#salesdist-screen').hide();
-    $('#customer-screen').hide();*/
+    $('#customer-screen').hide();
     web3.eth.getAccounts(function(error, accounts) {
       if (error) {
         console.log(error);
       }
 
       // [0] is always whatever the active account is in Metamask
-      var account = accounts[0];
-
-      var currAccount = $('.curr-acct-is');
-      currAccount.text(account);
-      //console.log("Account is", account);
+      $('.curr-acct-is').text(accounts[0]);
     });
   },
 
