@@ -38,8 +38,27 @@ AcmeApp = {
       AcmeApp.contracts.AcmeWidgetCo = TruffleContract(AcmeArtifact);
       // Set the provider for our contract
       AcmeApp.contracts.AcmeWidgetCo.setProvider(AcmeApp.web3Provider);
+
+      AcmeApp.contracts.AcmeWidgetCo.deployed().then(function(acmeInstance) {
+        var factoryEvent = acmeInstance.NewFactory();
+        var tsEvent = acmeInstance.NewTestSite();
+        factoryEvent.watch(function(error, result) {
+          if (!error) {
+            console.log("Factory added: ", result.args._factoryCount.toNumber(), " ", result.args._factory);
+          }
+        });
+        tsEvent.watch(function(error, result) {
+          if (!error) {
+            console.log("Test site added: ", result.args._testSiteCount.toNumber(), " ", result.args._testSite);
+          }
+        });
+      }).catch(function(err) {
+        console.log(err, message);
+      });
+
       return AcmeApp.displayCurrentAccount();
-    })
+    });
+
 
     return AcmeApp.bindEvents();
   },
@@ -77,6 +96,28 @@ AcmeApp = {
     });
   },
 
+  addLoc: function(locType) {
+    web3.eth.getAccounts(function(error, accounts) {
+      if (error) {
+        console.log(error);
+      }
+
+      AcmeApp.contracts.AcmeWidgetCo.deployed().then(function(acmeInstance) {
+        switch(locType) {
+          case 1:
+            console.log("new-factory:", $('#new-factory').val());
+            return acmeInstance.addFactory($('#new-factory').val(), {from:accounts[0]});
+          case 2:
+            console.log("new-test-site:", $('#new-test-site').val());
+            return acmeInstance.addTestSite($('#new-test-site').val(), {from:accounts[0]});
+          default:
+            console.log("Invalid location type specified when calling addLoc().");
+        }
+      }).catch(function(err) {
+        console.log(err, message);
+      });
+    });
+  },
 
   displayCurrentAccount: function() {
     $('#login-screen').show();

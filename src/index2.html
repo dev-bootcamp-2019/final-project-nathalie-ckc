@@ -49,6 +49,16 @@
             <input type="text" class="form-control" id="new-customer" placeholder="Enter Ethereum address of new Customer">
             <button id="reg-customer" class="btn btn-primary" onclick="AcmeApp.regUser(4); return false;">Register</button>
           </div>
+          <div class="form-group">
+            Add a Factory
+            <input type="text" class="form-control" id="new-factory" placeholder="Enter new factory name/location">
+            <button id="add-factory" class="btn btn-primary" onclick="AcmeApp.addLoc(1); return false;">Add Factory</button>
+          </div>
+          <div class="form-group">
+            Add a Test site
+            <input type="text" class="form-control" id="new-test-site" placeholder="Enter new test site name/location">
+            <button id="add-test-site" class="btn btn-primary" onclick="AcmeApp.addLoc(2); return false;">Add Test Site</button>
+          </div>
         </form>
 
       </div>
