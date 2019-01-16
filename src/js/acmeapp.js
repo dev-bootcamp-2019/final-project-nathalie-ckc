@@ -119,6 +119,24 @@ AcmeApp = {
     });
   },
 
+  beginEmerg: function() {
+    AcmeApp.contracts.AcmeWidgetCo.deployed().then(function(acmeInstance) {
+      console.log("Enabling EMERGENCY state.");
+      acmeInstance.beginEmergency();
+    }).catch(function(err) {
+      console.log(err, message);
+    });
+  },
+
+  endEmerg: function() {
+    AcmeApp.contracts.AcmeWidgetCo.deployed().then(function(acmeInstance) {
+      console.log("Disabling EMERGENCY state.");
+      acmeInstance.endEmergency();
+    }).catch(function(err) {
+      console.log(err, message);
+    });
+  },
+
   displayCurrentAccount: function() {
     $('#login-screen').show();
     /*$('#admin-screen').show();

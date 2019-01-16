@@ -59,6 +59,14 @@
             <input type="text" class="form-control" id="new-test-site" placeholder="Enter new test site name/location">
             <button id="add-test-site" class="btn btn-primary" onclick="AcmeApp.addLoc(2); return false;">Add Test Site</button>
           </div>
+          <div class="form-group">
+            Enable Emergency state<br>
+            <button id="begin-emerg" class="btn btn-danger" onclick="AcmeApp.beginEmerg(); return false;">Begin Emergency</button>
+          </div>
+          <div class="form-group">
+            Disable Emergency state<br>
+            <button id="end-emerg" class="btn btn-success" onclick="AcmeApp.endEmerg(); return false;">End Emergency</button>
+          </div>
         </form>
 
       </div>
