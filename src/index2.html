@@ -68,28 +68,28 @@
             <button id="end-emerg" class="btn btn-success" onclick="AcmeApp.endEmerg(); return false;">End Emergency</button>
           </div>
         </form>
-
       </div>
 
       <div id="tester-screen">
         <h1>Acme Widget Company</h1>
         <h2>Tester screen for account</h2>
         <p class="curr-acct-is"></p>
+        <h3>Record a tested widget</h3>
         <form>
           <div class="form-group">
-            Record a tested widget
-            Factory here
-            Test site here
             <label for="test-site">Test site</label>
-            <select class="custom-select" id="test-site" required>
+            <select class="custom-select" id="test-site-select" required>
               <option value="">Choose...</option>
-              <option>United States</option>
             </select>
             <input type="text" class="form-control" id="widget-serial-num" placeholder="Enter widget serial number">
             <input type="text" class="form-control" id="widget-test-result" placeholder="Enter 32-bit result">
             <button id="tester-rec-widget" class="btn btn-primary" onclick="AcmeApp.recordWidget(); return false;">Submit</button>
           </div>
         </form>
+      </div>
+
+      <div id="test-site-template" style="display: none;">
+        <option class=ts-name>TS0 Toronto</option>
       </div>
 
       <div id="salesdist-screen">

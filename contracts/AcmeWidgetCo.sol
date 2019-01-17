@@ -44,8 +44,8 @@ contract AcmeWidgetCo {
     // During the life of this contract Acme won't ever reach >256 sites
     string[] public factoryList;
     string[] public testSiteList;
-    uint8 factoryCount;
-    uint8 testSiteCount;
+    uint8 public factoryCount;
+    uint8 public testSiteCount;
 
     // Used to ensure we don't add a duplicate factory or test site
     // Uses the keccak256 hash of the string for the lookup

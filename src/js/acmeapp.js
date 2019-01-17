@@ -219,14 +219,30 @@ AcmeApp = {
         console.log("addr2Role(account) ", role);
         $('#login-screen').hide();
         (role == 1) ? $('#admin-screen').show() : $('#admin-screen').hide();
-        (role == 2) ? $('#tester-screen').show() : $('#tester-screen').hide();
-        (role == 3) ? $('#salesdist-screen').show() : $('#salesdist-screen').hide();
-        (role == 4) ? $('#customer-screen').show() : $('#customer-screen').hide();
-      }).then(function(result) {
-        // Populate tester menu options
         if (role == 2) {
           console.log("TODO: Populate the tester menu options here");
+          acmeInstance.testSiteCount().then(function(tscount) {
+            var tsct = tscount.toNumber();
+            var tsSelect = $('#test-site-select');
+            var tsTemplate = $('#test-site-template');
+            console.log("tsct: ", tsct);
+            console.log("tsSelect: ", tsSelect);
+            console.log("tsTemplate: ", tsTemplate);
+
+            for (i = 0; i < tsct; i ++) {
+              acmeInstance.testSiteList(i).then(function(tsname) {
+                console.log("tsname: ", tsname);
+                tsTemplate.find('.ts-name').text(tsname);
+                tsSelect.append(tsTemplate.html());
+              });
+            }
+          });
+          $('#tester-screen').show();
+        } else {
+          $('#tester-screen').hide();
         }
+        (role == 3) ? $('#salesdist-screen').show() : $('#salesdist-screen').hide();
+        (role == 4) ? $('#customer-screen').show() : $('#customer-screen').hide();
       }).catch(function(err) {
         console.log(err, message);
       });
