@@ -221,7 +221,7 @@ AcmeApp = {
         (role == 1) ? $('#admin-screen').show() : $('#admin-screen').hide();
         (role == 2) ? $('#tester-screen').show() : $('#tester-screen').hide();
         (role == 3) ? $('#salesdist-screen').show() : $('#salesdist-screen').hide();
-        (role == 3) ? $('#customer-screen').show() : $('#customer-screen').hide();
+        (role == 4) ? $('#customer-screen').show() : $('#customer-screen').hide();
       }).then(function(result) {
         // Populate tester menu options
         if (role == 2) {
