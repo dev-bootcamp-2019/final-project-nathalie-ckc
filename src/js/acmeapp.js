@@ -141,6 +141,10 @@ AcmeApp = {
   },
 
   //-----------------------------------------------
+  // Tester functions
+  //-----------------------------------------------
+
+  //-----------------------------------------------
   // Sales distributor functions
   //-----------------------------------------------
   updateUPrice: function() {
@@ -197,6 +201,7 @@ AcmeApp = {
     event.preventDefault();
 
     var acmeInstance;
+    var role;
 
     web3.eth.getAccounts(function(error, accounts) {
       if (error) {
@@ -210,13 +215,18 @@ AcmeApp = {
         acmeInstance = instance;
         return acmeInstance.addr2Role(account);
       }).then(function(result) {
-        var role = result.toNumber();
+        role = result.toNumber();
         console.log("addr2Role(account) ", role);
         $('#login-screen').hide();
         (role == 1) ? $('#admin-screen').show() : $('#admin-screen').hide();
         (role == 2) ? $('#tester-screen').show() : $('#tester-screen').hide();
         (role == 3) ? $('#salesdist-screen').show() : $('#salesdist-screen').hide();
         (role == 3) ? $('#customer-screen').show() : $('#customer-screen').hide();
+      }).then(function(result) {
+        // Populate tester menu options
+        if (role == 2) {
+          console.log("TODO: Populate the tester menu options here");
+        }
       }).catch(function(err) {
         console.log(err, message);
       });

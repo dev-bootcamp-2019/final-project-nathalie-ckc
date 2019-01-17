@@ -75,6 +75,21 @@
         <h1>Acme Widget Company</h1>
         <h2>Tester screen for account</h2>
         <p class="curr-acct-is"></p>
+        <form>
+          <div class="form-group">
+            Record a tested widget
+            Factory here
+            Test site here
+            <label for="test-site">Test site</label>
+            <select class="custom-select" id="test-site" required>
+              <option value="">Choose...</option>
+              <option>United States</option>
+            </select>
+            <input type="text" class="form-control" id="widget-serial-num" placeholder="Enter widget serial number">
+            <input type="text" class="form-control" id="widget-test-result" placeholder="Enter 32-bit result">
+            <button id="tester-rec-widget" class="btn btn-primary" onclick="AcmeApp.recordWidget(); return false;">Submit</button>
+          </div>
+        </form>
       </div>
 
       <div id="salesdist-screen">
@@ -82,20 +97,20 @@
         <h2>Sales Distributor screen for account</h2>
         <p class="curr-acct-is"></p>
         <form>
-            <div class="form-group">
-              Update bin unit price
-              <input type="text" class="form-control" id="new-bin-uprice-bin" placeholder="Enter bin number">
-              <input type="text" class="form-control" id="new-bin-uprice" placeholder="Enter new price in wei">
-              <button id="sd-update-uprice" class="btn btn-primary" onclick="AcmeApp.updateUPrice(); return false;">Submit</button>
-            </div>
-            <div class="form-group">
-              Update bin mask
-              <input type="text" class="form-control" id="new-bin-mask-bin" placeholder="Enter bin number">
-              <input type="text" class="form-control" id="new-bin-mask" placeholder="Enter new 32-bit mask">
-              <button id="sd-update-mask" class="btn btn-primary" onclick="AcmeApp.updateMask(); return false;">Submit</button>
-            </div>
-          </form>
-        </div>
+          <div class="form-group">
+            Update bin unit price
+            <input type="text" class="form-control" id="new-bin-uprice-bin" placeholder="Enter bin number">
+            <input type="text" class="form-control" id="new-bin-uprice" placeholder="Enter new price in wei">
+            <button id="sd-update-uprice" class="btn btn-primary" onclick="AcmeApp.updateUPrice(); return false;">Submit</button>
+          </div>
+          <div class="form-group">
+            Update bin mask
+            <input type="text" class="form-control" id="new-bin-mask-bin" placeholder="Enter bin number">
+            <input type="text" class="form-control" id="new-bin-mask" placeholder="Enter new 32-bit mask">
+            <button id="sd-update-mask" class="btn btn-primary" onclick="AcmeApp.updateMask(); return false;">Submit</button>
+          </div>
+        </form>
+      </div>
 
       <div id="customer-screen">
         <h1>Acme Widget Company</h1>
