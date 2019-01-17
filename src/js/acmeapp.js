@@ -67,6 +67,9 @@ AcmeApp = {
     $(document).on('click', '.login-btn', AcmeApp.handleLogin);
   },
 
+  //-----------------------------------------------
+  // Admin functions
+  //-----------------------------------------------
   regUser: function(role) {
     web3.eth.getAccounts(function(error, accounts) {
       if (error) {
@@ -134,6 +137,39 @@ AcmeApp = {
       acmeInstance.endEmergency();
     }).catch(function(err) {
       console.log(err, message);
+    });
+  },
+
+  //-----------------------------------------------
+  // Sales distributor functions
+  //-----------------------------------------------
+  updateUPrice: function() {
+    web3.eth.getAccounts(function(error, accounts) {
+      if (error) {
+        console.log(error);
+      }
+
+      AcmeApp.contracts.AcmeWidgetCo.deployed().then(function(acmeInstance) {
+        console.log("Updating bin ", $('#new-bin-uprice-bin').val(), "unit price to ", $('#new-bin-uprice').val());
+        return acmeInstance.updateUnitPrice($('#new-bin-uprice-bin').val(), $('#new-bin-uprice').val(), {from:accounts[0]});
+      }).catch(function(err) {
+        console.log(err, message);
+      });
+    });
+  },
+
+  updateMask: function() {
+    web3.eth.getAccounts(function(error, accounts) {
+      if (error) {
+        console.log(error);
+      }
+
+      AcmeApp.contracts.AcmeWidgetCo.deployed().then(function(acmeInstance) {
+        console.log("Updating bin ", $('#new-bin-mask-bin').val(), "mask to ", $('#new-bin-mask').val());
+        return acmeInstance.updateBinMask($('#new-bin-mask-bin').val(), $('#new-bin-mask').val(), {from:accounts[0]});
+      }).catch(function(err) {
+        console.log(err, message);
+      });
     });
   },
 
