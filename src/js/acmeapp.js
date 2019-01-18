@@ -144,19 +144,34 @@ AcmeApp = {
   //-----------------------------------------------
   recordWidget: function() {
     console.log("Submit was clicked");
-    AcmeApp.contracts.AcmeWidgetCo.deployed().then(function(acmeInstance) {
-      var factorySelect = $('#factory-select').val();
-      var factoryNum = acmeInstance.factoryMapping(web3.sha3(factorySelect)).toNumber();
-      var tsSelect = $('#test-site-select').val();
-      var tsNum = acmeInstance.factoryMapping(web3.sha3(tsSelect)).toNumber();
-      var serial = $('#widget-serial-num').val();
-      var testres = $('widget-test-result').val();
-      console.log("factory-select:", factorySelect);
-      return acmeInstance.recordWidgetTests(serial, factoryNum, tsNum, testres, {from:accounts[0]});
-    }).then(function(widgetpos) {
-      console.log("This was the ", widgetpos, "th widget recorded.");
-    }).catch(function(err) {
-      console.log(err, message);
+    var acmeInstance;
+    var factorySelect = $('#factory-select').val();
+    var factoryNum;
+    var tsSelect = $('#test-site-select').val();
+    var tsNum;
+    var serial = $('#widget-serial-num').val();
+    var testres = $('#widget-test-result').val();
+    web3.eth.getAccounts(function(error, accounts) {
+      if (error) {
+        console.log(error);
+      }
+
+      AcmeApp.contracts.AcmeWidgetCo.deployed().then(function(instance) {
+        acmeInstance = instance;
+        return acmeInstance.factoryMapping(web3.sha3(factorySelect));
+      }).then(function(result) {
+        factoryNum = result.toNumber();
+        return acmeInstance.testSiteMapping(web3.sha3(tsSelect));
+      }).then(function(result) {
+        tsNum = result.toNumber();
+        console.log("serial: ", serial);
+        console.log("factory-select: ", factorySelect, " factoryNum: ", factoryNum);
+        console.log("test-site-select: ", tsSelect, "tsNum: ", tsNum);
+        console.log("testres: ", testres);
+        return acmeInstance.recordWidgetTests(serial, factoryNum, tsNum, testres, {from:accounts[0]});
+      }).catch(function(err) {
+        console.log(err, message);
+      });
     });
   },
 
