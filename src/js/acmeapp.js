@@ -59,7 +59,6 @@ AcmeApp = {
       return AcmeApp.displayCurrentAccount();
     });
 
-
     return AcmeApp.bindEvents();
   },
 
@@ -143,6 +142,23 @@ AcmeApp = {
   //-----------------------------------------------
   // Tester functions
   //-----------------------------------------------
+  recordWidget: function() {
+    console.log("Submit was clicked");
+    AcmeApp.contracts.AcmeWidgetCo.deployed().then(function(acmeInstance) {
+      var factorySelect = $('#factory-select').val();
+      var factoryNum = acmeInstance.factoryMapping(web3.sha3(factorySelect)).toNumber();
+      var tsSelect = $('#test-site-select').val();
+      var tsNum = acmeInstance.factoryMapping(web3.sha3(tsSelect)).toNumber();
+      var serial = $('#widget-serial-num').val();
+      var testres = $('widget-test-result').val();
+      console.log("factory-select:", factorySelect);
+      return acmeInstance.recordWidgetTests(serial, factoryNum, tsNum, testres, {from:accounts[0]});
+    }).then(function(widgetpos) {
+      console.log("This was the ", widgetpos, "th widget recorded.");
+    }).catch(function(err) {
+      console.log(err, message);
+    });
+  },
 
   //-----------------------------------------------
   // Sales distributor functions
@@ -220,7 +236,6 @@ AcmeApp = {
         $('#login-screen').hide();
         (role == 1) ? $('#admin-screen').show() : $('#admin-screen').hide();
         if (role == 2) {
-          console.log("TODO: Populate the tester menu options here");
           acmeInstance.testSiteCount().then(function(tscount) {
             var tsct = tscount.toNumber();
             var tsSelect = $('#test-site-select');
@@ -234,6 +249,22 @@ AcmeApp = {
                 console.log("tsname: ", tsname);
                 tsTemplate.find('.ts-name').text(tsname);
                 tsSelect.append(tsTemplate.html());
+              });
+            }
+          });
+          acmeInstance.factoryCount().then(function(fcount) {
+            var fct = fcount.toNumber();
+            var fSelect = $('#factory-select');
+            var fTemplate = $('#factory-template');
+            console.log("fct: ", fct);
+            console.log("fSelect: ", fSelect);
+            console.log("fTemplate: ", fTemplate);
+
+            for (j = 0; j < fct; j++) {
+              acmeInstance.factoryList(j).then(function(fname) {
+                console.log(" fname: ", fname);
+                fTemplate.find('.factory-name').text(fname);
+                fSelect.append(fTemplate.html());
               });
             }
           });

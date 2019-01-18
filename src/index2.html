@@ -77,15 +77,21 @@
         <h3>Record a tested widget</h3>
         <form>
           <div class="form-group">
-            <label for="test-site">Test site</label>
+            <select class="custom-select" id="factory-select" required>
+              <option value="">Choose Factory...</option>
+            </select>
             <select class="custom-select" id="test-site-select" required>
-              <option value="">Choose...</option>
+              <option value="">Choose Test Site...</option>
             </select>
             <input type="text" class="form-control" id="widget-serial-num" placeholder="Enter widget serial number">
             <input type="text" class="form-control" id="widget-test-result" placeholder="Enter 32-bit result">
             <button id="tester-rec-widget" class="btn btn-primary" onclick="AcmeApp.recordWidget(); return false;">Submit</button>
           </div>
         </form>
+      </div>
+
+      <div id="factory-template" style="display: none;">
+        <option class=factory-name>F0 Burnaby</option>
       </div>
 
       <div id="test-site-template" style="display: none;">
