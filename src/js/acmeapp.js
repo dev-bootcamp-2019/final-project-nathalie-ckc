@@ -247,7 +247,7 @@ AcmeApp = {
     }).then(function(result) {
       var binUPrice = result.toNumber();
       var totalCost = $('#calc-buy-qty').val() * binUPrice;
-      var costString = totalCost + " wei";
+      var costString = "Bin: " + $('#calc-buy-from-bin').val() + " Units: " + $('#calc-buy-qty').val() + " costs "+ totalCost + " wei";
       $('#calc-total-cost').text(costString);
       console.log("Cost for buying ", $('#calc-buy-qty').val(), " widgets from bin ", $('#calc-buy-from-bin').val());
       console.log("is ", totalCost, " wei.");
@@ -281,10 +281,6 @@ AcmeApp = {
 
   displayCurrentAccount: function() {
     $('#login-screen').show();
-    /*$('#admin-screen').show();
-    $('#tester-screen').show();
-    $('#salesdist-screen').show();
-    $('#customer-screen').show();*/
     $('#admin-screen').hide();
     $('#tester-screen').hide();
     $('#salesdist-screen').hide();
