@@ -195,48 +195,42 @@ contract AcmeWidgetCo {
         emit NewCustomer(_newCustomer);
     }
 
-    // Returns factoryCount if the factory was successfully added to the list
-    // Won't be added if factory is already in the list, so return 0.
-    function addFactory(string _factory) public onlyAdmin returns (uint8) {
+    // Won't be added if factory is already in the list
+    function addFactory(string _factory) public onlyAdmin {
         require(factoryCount < 255);  // Prevent overflow
-        if (factoryMapping[keccak256(abi.encodePacked(_factory))] != 0) {
-            return 0;
-        } else {
-            factoryList.push(_factory);
-            factoryMapping[keccak256(abi.encodePacked(_factory))] = factoryCount;
-            factoryCount++;
-            emit NewFactory(factoryCount, _factory);
-            return factoryCount;
-        }
+        require(factoryMapping[keccak256(abi.encodePacked(_factory))] == 0);
+
+        factoryList.push(_factory);
+        factoryMapping[keccak256(abi.encodePacked(_factory))] = factoryCount;
+        factoryCount++;
+
+        emit NewFactory(factoryCount, _factory);
     }
 
-    // Returns testSiteCount if the test site was successfully added to the list
-    // Won't be added if test site is already in the list, so return 0.
-    function addTestSite(string _testSite) public onlyAdmin returns (uint8) {
+    // Won't be added if test site is already in the list
+    function addTestSite(string _testSite) public onlyAdmin {
         require(testSiteCount < 255);  // Prevent overflow
-        if (testSiteMapping[keccak256(abi.encodePacked(_testSite))] != 0) {
-            return 0;
-        } else {
-            testSiteList.push(_testSite);
-            testSiteMapping[keccak256(abi.encodePacked(_testSite))] = testSiteCount;
-            testSiteCount++;
-            emit NewTestSite(testSiteCount, _testSite);
-            return testSiteCount;
-        }
+        require(testSiteMapping[keccak256(abi.encodePacked(_testSite))] == 0);
+
+        testSiteList.push(_testSite);
+        testSiteMapping[keccak256(abi.encodePacked(_testSite))] = testSiteCount;
+        testSiteCount++;
+
+        emit NewTestSite(testSiteCount, _testSite);
     }
 
     //-------------------------
     // Tester functions
     //-------------------------
-    // Returns the widgetID (i.e. the index into the widgetList for this widget)
+
     function recordWidgetTests(uint32 _serial, uint8 _factory, uint8 _testSite, uint32 _results)
         public
         onlyTester
-        returns (uint32)
     {
         require(_factory < factoryCount);           // Valid factory
         require(_testSite < testSiteCount);         // Valid test site
         require(widgetSerialMapping[_serial] == 0); // Widget not already recorded
+        
         uint8 bin;
         WidgetData memory w;
         w.serialNumber = _serial;
@@ -262,8 +256,8 @@ contract AcmeWidgetCo {
         }
         binWidgetCount[bin]++;
         widgetCount++;
+
         emit NewTestedWidget(_serial, _factory, _testSite, _results, widgetCount, bin, binWidgetCount[bin]);
-        return widgetCount;
     }
 
     //-------------------------
