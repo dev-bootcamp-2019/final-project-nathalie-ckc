@@ -32,17 +32,20 @@ contract AcmeWidgetCo {
     bool public stopContract;
 
     // Lists of users by role
-    mapping (address => bool) public adminList;
-    mapping (address => bool) public testerList;
-    mapping (address => bool) public salesDistributorList;
-    mapping (address => bool) public customerList;
+    mapping (address => uint8) public addr2Role;
+    // Enum may seem appropriate, but you have to document the decoding anyway
+    // because the enum isn't accessible in JavaScript, so skip using enum
+    // Admin = 1
+    // Tester = 2
+    // Sales Distributor = 3
+    // Customer = 4
 
     // Stores names of factories and test sites
     // During the life of this contract Acme won't ever reach >256 sites
     string[] public factoryList;
     string[] public testSiteList;
-    uint8 factoryCount;
-    uint8 testSiteCount;
+    uint8 public factoryCount;
+    uint8 public testSiteCount;
 
     // Used to ensure we don't add a duplicate factory or test site
     // Uses the keccak256 hash of the string for the lookup
@@ -87,7 +90,7 @@ contract AcmeWidgetCo {
     //===========================================
     modifier onlyAdmin {
         require(
-            adminList[msg.sender],
+            (addr2Role[msg.sender] == 1),
             "Only Admins can run this function."
         );
         _;
@@ -95,7 +98,7 @@ contract AcmeWidgetCo {
 
     modifier onlyTester {
         require(
-            testerList[msg.sender],
+            (addr2Role[msg.sender] == 2),
             "Only Testers can run this function."
         );
         _;
@@ -103,7 +106,7 @@ contract AcmeWidgetCo {
 
     modifier onlySalesDistributor {
         require(
-            salesDistributorList[msg.sender],
+            (addr2Role[msg.sender] == 3),
             "Only Sales Distributors can run this function."
         );
         _;
@@ -111,7 +114,7 @@ contract AcmeWidgetCo {
 
     modifier onlyCustomer {
         require(
-            customerList[msg.sender],
+            (addr2Role[msg.sender] == 4),
             "Only Customers can run this function."
         );
         _;
@@ -137,7 +140,7 @@ contract AcmeWidgetCo {
         stopContract = false;
 
         // The first admin is the deployer of the contract
-        adminList[msg.sender] = true;
+        addr2Role[msg.sender] = 1;
 
         // These values can only be changed by Sales Distributors
         binUnitPrice[1] = 0.1 ether;
@@ -169,22 +172,26 @@ contract AcmeWidgetCo {
 
     // Functions to add to user lists
     function registerAdmin(address _newAdmin) public onlyAdmin {
-        adminList[_newAdmin] = true;
+        require(addr2Role[_newAdmin] == 0);
+        addr2Role[_newAdmin] = 1;
         emit NewAdmin(_newAdmin);
     }
 
     function registerTester(address _newTester) public onlyAdmin {
-        testerList[_newTester] = true;
+        require(addr2Role[_newTester] == 0);
+        addr2Role[_newTester] = 2;
         emit NewTester(_newTester);
     }
 
     function registerSalesDistributor(address _newSalesDistributor) public onlyAdmin {
-        salesDistributorList[_newSalesDistributor] = true;
+        require(addr2Role[_newSalesDistributor] == 0);
+        addr2Role[_newSalesDistributor] = 3;
         emit NewSalesDistributor(_newSalesDistributor);
     }
 
     function registerCustomer(address _newCustomer) public onlyAdmin {
-        customerList[_newCustomer] = true;
+        require(addr2Role[_newCustomer] == 0);
+        addr2Role[_newCustomer] = 4;
         emit NewCustomer(_newCustomer);
     }
 
