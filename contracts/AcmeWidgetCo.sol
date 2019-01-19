@@ -294,7 +294,7 @@ contract AcmeWidgetCo {
         uint32 lastSold = lastWidgetSoldInBin[_bin];
         uint256 uPrice = binUnitPrice[_bin];
         uint32 stock = wCount.sub(lastSold).sub(1);
-        require((_quantity <= stock), "Insufficient stock.");
+        require((_quantity <= stock), "Insufficient stock. NOTE: widget[0] in each bin is not for sale.");
         require((uint256(_quantity).mul(uPrice) <= msg.value), "Insufficient funds.");
 
         // HACK: Currently doesn't refund any excess if customer overpaid
