@@ -218,7 +218,8 @@ AcmeApp = {
     }).then(function(result) {
       var binUPrice = result.toNumber();
       var totalCost = $('#calc-buy-qty').val() * binUPrice;
-      $('#calc-total-cost').text(totalCost);
+      var costString = totalCost + " wei";
+      $('#calc-total-cost').text(costString);
       console.log("Cost for buying ", $('#calc-buy-qty').val(), " widgets from bin ", $('#calc-buy-from-bin').val());
       console.log("is ", totalCost, " wei.");
     }).catch(function(err) {
