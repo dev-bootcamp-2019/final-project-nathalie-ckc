@@ -92,6 +92,17 @@ AcmeApp = {
           default:
             console.log("Invalid role specified when calling regUser().");
         }
+      }).then(function() {
+        switch(role) {
+          case 1:
+            $('#new-admin').val("");
+          case 2:
+            $('#new-tester').val("");
+          case 3:
+            $('#new-salesdist').val("");
+          case 4:
+            $('#new-customer').val("");
+        }
       }).catch(function(err) {
         console.log(err, message);
       });
@@ -114,6 +125,13 @@ AcmeApp = {
             return acmeInstance.addTestSite($('#new-test-site').val(), {from:accounts[0]});
           default:
             console.log("Invalid location type specified when calling addLoc().");
+        }
+      }).then(function() {
+        switch(locType) {
+          case 1:
+            $('#new-factory').val("");
+          case 2:
+            $('#new-test-site').val("");
         }
       }).catch(function(err) {
         console.log(err, message);
@@ -169,6 +187,11 @@ AcmeApp = {
         console.log("test-site-select: ", tsSelect, "tsNum: ", tsNum);
         console.log("testres: ", testres);
         return acmeInstance.recordWidgetTests(serial, factoryNum, tsNum, testres, {from:accounts[0]});
+      }).then(function() {
+        $('#factory-select').val("");
+        $('#test-site-select').val("");
+        $('#widget-serial-num').val("");
+        $('#widget-test-result').val("");
       }).catch(function(err) {
         console.log(err, message);
       });
@@ -187,6 +210,9 @@ AcmeApp = {
       AcmeApp.contracts.AcmeWidgetCo.deployed().then(function(acmeInstance) {
         console.log("Updating bin ", $('#new-bin-uprice-bin').val(), "unit price to ", $('#new-bin-uprice').val());
         return acmeInstance.updateUnitPrice($('#new-bin-uprice-bin').val(), $('#new-bin-uprice').val(), {from:accounts[0]});
+      }).then(function() {
+        $('#new-bin-uprice-bin').val("");
+        $('#new-bin-uprice').val("");
       }).catch(function(err) {
         console.log(err, message);
       });
@@ -202,6 +228,9 @@ AcmeApp = {
       AcmeApp.contracts.AcmeWidgetCo.deployed().then(function(acmeInstance) {
         console.log("Updating bin ", $('#new-bin-mask-bin').val(), "mask to ", $('#new-bin-mask').val());
         return acmeInstance.updateBinMask($('#new-bin-mask-bin').val(), $('#new-bin-mask').val(), {from:accounts[0]});
+      }).then(function() {
+        $('#new-bin-mask-bin').val("");
+        $('#new-bin-mask').val("");
       }).catch(function(err) {
         console.log(err, message);
       });
@@ -222,6 +251,8 @@ AcmeApp = {
       $('#calc-total-cost').text(costString);
       console.log("Cost for buying ", $('#calc-buy-qty').val(), " widgets from bin ", $('#calc-buy-from-bin').val());
       console.log("is ", totalCost, " wei.");
+      $('#calc-buy-from-bin').val("");
+      $('#calc-buy-qty').val("");
     }).catch(function(err) {
       console.log(err, message);
     });
@@ -237,6 +268,10 @@ AcmeApp = {
         console.log("Buying from bin ", $('#buy-from-bin').val(), "this many widgets: ", $('#buy-qty').val());
         console.log("Sending payment in wei of: ", $('#send-funds').val());
         return acmeInstance.buyWidgets($('#buy-from-bin').val(), $('#buy-qty').val(), {from:accounts[0], value:$('#send-funds').val()});
+      }).then(function() {
+        $('#buy-from-bin').val("");
+        $('#buy-qty').val("");
+        $('#send-funds').val("");
       }).catch(function(err) {
         console.log(err, message);
       });
