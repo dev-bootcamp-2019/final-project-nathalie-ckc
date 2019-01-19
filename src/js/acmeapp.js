@@ -208,6 +208,41 @@ AcmeApp = {
     });
   },
 
+  //-----------------------------------------------
+  // Customer functions
+  //-----------------------------------------------
+  calculateCost: function() {
+    AcmeApp.contracts.AcmeWidgetCo.deployed().then(function(acmeInstance) {
+      console.log("In calculateCost. Bin: ", $('#calc-buy-from-bin').val());
+      return acmeInstance.binUnitPrice($('#calc-buy-from-bin').val());
+    }).then(function(result) {
+      var binUPrice = result.toNumber();
+      var totalCost = $('#calc-buy-qty').val() * binUPrice;
+      $('#calc-total-cost').text(totalCost);
+      console.log("Cost for buying ", $('#calc-buy-qty').val(), " widgets from bin ", $('#calc-buy-from-bin').val());
+      console.log("is ", totalCost, " wei.");
+    }).catch(function(err) {
+      console.log(err, message);
+    });
+  },
+
+  buy: function() {
+    web3.eth.getAccounts(function(error, accounts) {
+      if (error) {
+        console.log(error);
+      }
+
+      AcmeApp.contracts.AcmeWidgetCo.deployed().then(function(acmeInstance) {
+        console.log("Buying from bin ", $('#buy-from-bin').val(), "this many widgets: ", $('#buy-qty').val());
+        console.log("Sending payment in wei of: ", $('#send-funds').val());
+        return acmeInstance.buyWidgets($('#buy-from-bin').val(), $('#buy-qty').val(), {from:accounts[0], value:$('#send-funds').val()});
+      }).catch(function(err) {
+        console.log(err, message);
+      });
+    });
+  },
+
+
   displayCurrentAccount: function() {
     $('#login-screen').show();
     /*$('#admin-screen').show();

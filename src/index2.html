@@ -105,13 +105,13 @@
         <form>
           <div class="form-group">
             Update bin unit price
-            <input type="text" class="form-control" id="new-bin-uprice-bin" placeholder="Enter bin number">
+            <input type="text" class="form-control" id="new-bin-uprice-bin" placeholder="Enter bin number (1 to 3)">
             <input type="text" class="form-control" id="new-bin-uprice" placeholder="Enter new price in wei">
             <button id="sd-update-uprice" class="btn btn-primary" onclick="AcmeApp.updateUPrice(); return false;">Submit</button>
           </div>
           <div class="form-group">
             Update bin mask
-            <input type="text" class="form-control" id="new-bin-mask-bin" placeholder="Enter bin number">
+            <input type="text" class="form-control" id="new-bin-mask-bin" placeholder="Enter bin number (1 to 3)">
             <input type="text" class="form-control" id="new-bin-mask" placeholder="Enter new 32-bit mask">
             <button id="sd-update-mask" class="btn btn-primary" onclick="AcmeApp.updateMask(); return false;">Submit</button>
           </div>
@@ -122,6 +122,23 @@
         <h1>Acme Widget Company</h1>
         <h2>Customer screen for account</h2>
         <p class="curr-acct-is"></p>
+        <form>
+          <div class="form-group">
+            Calculate cost for widgets in wei
+            <input type="text" class="form-control" id="calc-buy-from-bin" placeholder="Enter bin number (1 to 3)">
+            <input type="text" class="form-control" id="calc-buy-qty" placeholder="Enter number of widgets to buy from this bin">
+            <button id="calc-cost" class="btn btn-primary" onclick="AcmeApp.calculateCost(); return false;">Calculate</button>
+            <br>
+            <p id="calc-total-cost"></p>
+          </div>
+          <div class="form-group">
+            Buy widgets from a particular bin
+            <input type="text" class="form-control" id="buy-from-bin" placeholder="Enter bin number (1 to 3)">
+            <input type="text" class="form-control" id="buy-qty" placeholder="Enter number of widgets to buy from this bin">
+            <input type="text" class="form-control" id="send-funds" placeholder="Enter amount of wei you are sending">
+            <button id="cust-buy-widgets" class="btn btn-primary" onclick="AcmeApp.buy(); return false;">Buy</button>
+          </div>
+        </form>
       </div>
 
     </main><!-- /.container -->
