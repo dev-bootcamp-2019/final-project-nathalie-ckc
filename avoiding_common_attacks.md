@@ -35,3 +35,6 @@ This spreads out the power among accounts.
 the contract level, using "require()" statements.  Stop bad data before it even
 gets to try to interact with the blockchain. For example, the Admin role enters
 strings.  An improvement would be to limit the length of the string in the UI.
+
+* Run security analysis tools and find out what vulnerabilities I wasn't
+aware of.
