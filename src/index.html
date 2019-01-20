@@ -1,11 +1,11 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
-    <title>Pete's Pet Shop</title>
+    <title>Acme Widget Company</title>
 
     <!-- Bootstrap -->
     <link href="css/bootstrap.min.css" rel="stylesheet">
@@ -18,37 +18,148 @@
     <![endif]-->
   </head>
   <body>
-    <div class="container">
-      <div class="row">
-        <div class="col-xs-12 col-sm-8 col-sm-push-2">
-          <h1 class="text-center">Pete's Pet Shop</h1>
-          <hr/>
-          <br/>
+    <main role="main" class="container">
+
+      <div id="login-screen">
+        <h1>Acme Widget Company</h1>
+        <h2>Current account</h2>
+        <p class="curr-acct-is"></p>
+        <div class="form-group">
+          <button id="login" class="btn btn-primary login-btn">Login</button>
         </div>
       </div>
 
-      <div id="petsRow" class="row">
-        <!-- PETS LOAD HERE -->
-      </div>
-    </div>
-
-    <div id="petTemplate" style="display: none;">
-      <div class="col-sm-6 col-md-4 col-lg-3">
-        <div class="panel panel-default panel-pet">
-          <div class="panel-heading">
-            <h3 class="panel-title">Scrappy</h3>
-          </div>
-          <div class="panel-body">
-            <img alt="140x140" data-src="holder.js/140x140" class="img-rounded img-center" style="width: 100%;" src="https://animalso.com/wp-content/uploads/2017/01/Golden-Retriever_6.jpg" data-holder-rendered="true">
-            <br/><br/>
-            <strong>Breed</strong>: <span class="pet-breed">Golden Retriever</span><br/>
-            <strong>Age</strong>: <span class="pet-age">3</span><br/>
-            <strong>Location</strong>: <span class="pet-location">Warren, MI</span><br/><br/>
-            <button class="btn btn-default btn-adopt" type="button" data-id="0">Adopt</button>
-          </div>
+      <div id="admin-screen" hidden>
+        <div>
+          <h1>Acme Widget Company</h1>
+          <h2>Admin screen for account</h2>
+          <p class="curr-acct-is"></p>
         </div>
+        <form>
+          <div class="form-group">
+            Register an Admin
+            <input type="text" class="form-control" id="new-admin" placeholder="Enter Ethereum address of new Admin">
+            <button id="reg-admin" class="btn btn-primary" onclick="AcmeApp.regUser(1); return false;">Register</button>
+          </div>
+          <div class="form-group">
+            Register a Tester
+            <input type="text" class="form-control" id="new-tester" placeholder="Enter Ethereum address of new Tester">
+            <button id="reg-tester" class="btn btn-primary" onclick="AcmeApp.regUser(2); return false;">Register</button>
+          </div>
+          <div class="form-group">
+            Register a Sales Distributor
+            <input type="text" class="form-control" id="new-salesdist" placeholder="Enter Ethereum address of new Sales Distributor">
+            <button id="reg-salesdist" class="btn btn-primary" onclick="AcmeApp.regUser(3); return false;">Register</button>
+          </div>
+          <div class="form-group">
+            Register a Customer
+            <input type="text" class="form-control" id="new-customer" placeholder="Enter Ethereum address of new Customer">
+            <button id="reg-customer" class="btn btn-primary" onclick="AcmeApp.regUser(4); return false;">Register</button>
+          </div>
+          <div class="form-group">
+            Add a Factory
+            <input type="text" class="form-control" id="new-factory" placeholder="Enter new factory name/location">
+            <button id="add-factory" class="btn btn-primary" onclick="AcmeApp.addLoc(1); return false;">Add Factory</button>
+          </div>
+          <div class="form-group">
+            Add a Test site
+            <input type="text" class="form-control" id="new-test-site" placeholder="Enter new test site name/location">
+            <button id="add-test-site" class="btn btn-primary" onclick="AcmeApp.addLoc(2); return false;">Add Test Site</button>
+          </div>
+          <div class="form-group">
+            Query contract balance
+            <button id="query-balance" class="btn btn-primary" onclick="AcmeApp.queryBal(); return false;">Get Balance</button>
+            <p id="current-balance"></p>
+          </div>
+          <div class="form-group">
+            Withdraw funds to this Admin account
+            <input type="text" class="form-control" id="amt-to-withdraw" placeholder="Enter amount in wei to withdraw">
+            <button id="withdraw-amt" class="btn btn-primary" onclick="AcmeApp.withdrawAmt(); return false;">Withdraw</button>
+          </div>
+          <div class="form-group">
+            Enable Emergency state<br>
+            <button id="begin-emerg" class="btn btn-danger" onclick="AcmeApp.beginEmerg(); return false;">Begin Emergency</button>
+          </div>
+          <div class="form-group">
+            Disable Emergency state<br>
+            <button id="end-emerg" class="btn btn-success" onclick="AcmeApp.endEmerg(); return false;">End Emergency</button>
+          </div>
+        </form>
       </div>
-    </div>
+
+      <div id="tester-screen" hidden>
+        <h1>Acme Widget Company</h1>
+        <h2>Tester screen for account</h2>
+        <p class="curr-acct-is"></p>
+        <h3>Record a tested widget</h3>
+        <form>
+          <div class="form-group">
+            <select class="custom-select" id="factory-select" required>
+              <option value="">Choose Factory...</option>
+            </select>
+            <select class="custom-select" id="test-site-select" required>
+              <option value="">Choose Test Site...</option>
+            </select>
+            <input type="text" class="form-control" id="widget-serial-num" placeholder="Enter widget serial number">
+            <input type="text" class="form-control" id="widget-test-result" placeholder="Enter 32-bit result">
+            <button id="tester-rec-widget" class="btn btn-primary" onclick="AcmeApp.recordWidget(); return false;">Submit</button>
+          </div>
+        </form>
+      </div>
+
+      <div id="factory-template" style="display: none;">
+        <option class=factory-name>F0 Burnaby</option>
+      </div>
+
+      <div id="test-site-template" style="display: none;">
+        <option class=ts-name>TS0 Toronto</option>
+      </div>
+
+      <div id="salesdist-screen" hidden>
+        <h1>Acme Widget Company</h1>
+        <h2>Sales Distributor screen for account</h2>
+        <p class="curr-acct-is"></p>
+        <form>
+          <div class="form-group">
+            Update bin unit price
+            <input type="text" class="form-control" id="new-bin-uprice-bin" placeholder="Enter bin number (1 to 3)">
+            <input type="text" class="form-control" id="new-bin-uprice" placeholder="Enter new price in wei">
+            <button id="sd-update-uprice" class="btn btn-primary" onclick="AcmeApp.updateUPrice(); return false;">Submit</button>
+          </div>
+          <div class="form-group">
+            Update bin mask
+            <input type="text" class="form-control" id="new-bin-mask-bin" placeholder="Enter bin number (1 to 3)">
+            <input type="text" class="form-control" id="new-bin-mask" placeholder="Enter new 32-bit mask">
+            <button id="sd-update-mask" class="btn btn-primary" onclick="AcmeApp.updateMask(); return false;">Submit</button>
+          </div>
+        </form>
+      </div>
+
+      <div id="customer-screen" hidden>
+        <h1>Acme Widget Company</h1>
+        <h2>Customer screen for account</h2>
+        <p class="curr-acct-is"></p>
+        <form>
+          <div class="form-group">
+            Calculate cost for widgets in wei
+            <input type="text" class="form-control" id="calc-buy-from-bin" placeholder="Enter bin number (1 to 3)">
+            <input type="text" class="form-control" id="calc-buy-qty" placeholder="Enter number of widgets to buy from this bin">
+            <button id="calc-cost" class="btn btn-primary" onclick="AcmeApp.calculateCost(); return false;">Calculate</button>
+            <br>
+            <p id="calc-total-cost"></p>
+          </div>
+          <div class="form-group">
+            Buy widgets from a particular bin
+            <input type="text" class="form-control" id="buy-from-bin" placeholder="Enter bin number (1 to 3)">
+            <input type="text" class="form-control" id="buy-qty" placeholder="Enter number of widgets to buy from this bin">
+            <input type="text" class="form-control" id="send-funds" placeholder="Enter amount of wei you are sending">
+            <button id="cust-buy-widgets" class="btn btn-primary" onclick="AcmeApp.buy(); return false;">Buy</button>
+          </div>
+        </form>
+      </div>
+
+    </main><!-- /.container -->
+
 
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
