@@ -45,18 +45,23 @@ This is what I tested with.  If you test with a different system, your mileage m
 
 #### Local development server
 
-##### 1) Clone the repository and get into the folder
+##### 1) Clone the repository
 ```
 git clone https://github.com/nathalie-ckc/ConsensysDevAcademyQ4CY18_project.git
-cd ConsensysDevAcademyQ4CY18_project/
 ```
 
-##### 2) Use NPM to install the necessary packages
+##### 2) Get into the folder and make sure you are on master branch
+```
+cd ConsensysDevAcademyQ4CY18_project/
+git checkout master
+```
+
+##### 3) Use NPM to install the necessary packages
 ```
 npm install
 ```
 
-##### 3) Start Ganache CLI
+##### 4) Start Ganache CLI
 Open a new terminal in the project directory
 ```
 ganache-cli
@@ -66,6 +71,36 @@ My project assumes that it's set up for port 8545 (per the course project requir
 Listening on 127.0.0.1:8545
 ```
 
+##### 5) Run the automated truffle tests
+```
+truffle test
+```
+You should see transactions and blocks being reported in your Ganache CLI terminal.  The test results should look something like this:
+![Truffle test results screenshot](images/truffle_test_results.png "Sample truffle test results")
+
+##### 6) Interact manually with the User Interface in a web browser
+If you look at the project directory before running the next command, it will look like:
+![Project dir before truffle compile](images/ls_before.png "ls Before truffle compile")
+Now, compile the project in truffle.  (The earlier 'truffle test' did a cleanroom test, so we don't have the build artifacts from that lying around.)
+```
+truffle compile
+```
+Now you will see a 'build' directory appear in the project directory:
+![Project dir after truffle compile](images/ls_after.png "ls After truffle compile")
+Next, we will deploy the dapp to the Ganache CLI development blockchain.
+```
+truffle migrate
+```
+The output should look something like this:
+![Truffle migrate output](images/truffle_migrate_output.png "Sample truffle migrate output")
+Next, we will use lite-server to serve up the web User Interface.
+```
+npm run dev
+```
+The web browser will pop up and Metamask will ask you to log in.
+![Metamask login](images/metamask_login.png "Metamask login screen pops up")
+Then Metamask will ask for your approval. Click Approve button.
+![Metamask approval](images/metamask_approval.png "Metamask approval screen pops up")
 
 #### Rinkeby
 
