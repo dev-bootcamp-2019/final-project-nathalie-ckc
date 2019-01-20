@@ -66,7 +66,7 @@ contract('AcmeWidgetCo', function(accounts) {
 
     it("Test that a registered account can't be registered again.", async() => {
         const acmeWidgetCo = await AcmeWidgetCo.deployed();
-        
+
         await catchRevert(acmeWidgetCo.registerTester(tester1, {from: admin1}));
     })
 
@@ -242,7 +242,6 @@ contract('AcmeWidgetCo', function(accounts) {
         await catchRevert(acmeWidgetCo.buyWidgets(1, 2, {from: customer1, value: 100}));
         const lwBin1After = await acmeWidgetCo.lastWidgetSoldInBin(1);
         assert.equal(lwBin1After, 0, "Should still not have sold any Bin1 widgets yet.");
-
     })
 
     it("Test customer can't buy more widgets than available even with sufficent msg.value.", async() => {
@@ -262,7 +261,7 @@ contract('AcmeWidgetCo', function(accounts) {
         const stoppedStateB4 = await acmeWidgetCo.stopContract();
         assert.equal(stoppedStateB4, false, "Contract should not be in stopped state yet.");
         await acmeWidgetCo.beginEmergency({from: admin1});
-        await acmeWidgetCo.buyWidgets(1, 3, {from: customer1, value: 600000000000000000});
+        await catchRevert(acmeWidgetCo.buyWidgets(1, 3, {from: customer1, value: 600000000000000000}));
         const lwBin1After = await acmeWidgetCo.lastWidgetSoldInBin(1);
         assert.equal(lwBin1After, 0, "Should not have sold any Bin1 widgets yet.");
         await acmeWidgetCo.endEmergency({from: admin1});
@@ -287,6 +286,20 @@ contract('AcmeWidgetCo', function(accounts) {
         assert.equal(lwBin1After, 3, "Should have sold widgets 1-3 from Bin1.");
     })
 
+    it("Test that admin can withdraw funds from contract.", async() => {
+        const acmeWidgetCo = await AcmeWidgetCo.deployed();
+
+        const balB4 = await acmeWidgetCo.getContractBalance();
+        assert.equal(balB4.toNumber(), 600000000000000000, "Balance should have been 600000000000000000 from previous sale.");
+        tx = await acmeWidgetCo.withdrawFunds(600000000000000000, {from: admin1});
+        truffleAssert.eventEmitted(tx, 'FundsWithdrawn', (ev) => {
+          return ((ev._withdrawer == admin1) &&
+            (ev._amt == 600000000000000000)
+          );
+        });
+        const balAfter = await acmeWidgetCo.getContractBalance();
+        assert.equal(balAfter.toNumber(), 0, "Should have withdrawn all funds from contract.");
+    })
 /*
     it("Is unit price what I expected?", async() => {
         const acmeWidgetCo = await AcmeWidgetCo.deployed();

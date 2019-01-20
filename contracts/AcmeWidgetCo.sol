@@ -99,6 +99,7 @@ contract AcmeWidgetCo {
     event NewUnitPrice(uint8 indexed _bin, uint256 _newPrice, address indexed _salesDistributor);
     event NewBinMask(uint8 indexed _bin, uint32 _newBinMask, address indexed _salesDistributor);
     event WidgetSale(uint8 indexed _bin, uint32 _quantity, address indexed _customer, uint256 _totalAmtPaid);
+    event FundsWithdrawn(address indexed _withdrawer, uint256 _amt);
 
 
     //===========================================
@@ -138,11 +139,13 @@ contract AcmeWidgetCo {
 
     // Circuit breaker
     modifier stopInEmergency {
-        if (!stopContract) _;
+        require(!stopContract, "Emergency: Contract is stopped.");
+        _;
     }
 
     modifier onlyInEmergency {
-        if (stopContract) _;
+        require(stopContract, "Not an emergency. This function is only for emergencies.");
+        _;
     }
 
 
@@ -184,6 +187,21 @@ contract AcmeWidgetCo {
     /// @notice Circuit breaker disable - end emergency mode
     function endEmergency() public onlyAdmin {
         stopContract = false;
+    }
+
+    /// @notice Report contract balance for withdrawal possibility
+    function getContractBalance() constant public onlyAdmin returns (uint) {
+        return address(this).balance;
+    }
+
+    /// @notice Allow admin to withdraw funds from contract
+    /// @dev TODO Create Finance role for that, if time allows
+    /// @dev Using transfer protects against re-entrancy
+    /// @param _amtToWithdraw How much to withdraw
+    function withdrawFunds(uint256 _amtToWithdraw) public onlyAdmin {
+        require(_amtToWithdraw <= address(this).balance, "Trying to withdraw more than contract balance.");
+        msg.sender.transfer(_amtToWithdraw);
+        emit FundsWithdrawn(msg.sender, _amtToWithdraw);
     }
 
     // Functions to add to user lists

@@ -67,6 +67,16 @@
             <button id="add-test-site" class="btn btn-primary" onclick="AcmeApp.addLoc(2); return false;">Add Test Site</button>
           </div>
           <div class="form-group">
+            Query contract balance
+            <button id="query-balance" class="btn btn-primary" onclick="AcmeApp.queryBal(); return false;">Get Balance</button>
+            <p id="current-balance"></p>
+          </div>
+          <div class="form-group">
+            Withdraw funds to this Admin account
+            <input type="text" class="form-control" id="amt-to-withdraw" placeholder="Enter amount in wei to withdraw">
+            <button id="withdraw-amt" class="btn btn-primary" onclick="AcmeApp.withdrawAmt(); return false;">Withdraw</button>
+          </div>
+          <div class="form-group">
             Enable Emergency state<br>
             <button id="begin-emerg" class="btn btn-danger" onclick="AcmeApp.beginEmerg(); return false;">Begin Emergency</button>
           </div>

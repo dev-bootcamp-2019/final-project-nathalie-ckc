@@ -139,6 +139,45 @@ AcmeApp = {
     });
   },
 
+  queryBal: function() {
+    web3.eth.getAccounts(function(error, accounts) {
+      if (error) {
+        console.log(error);
+      }
+
+      AcmeApp.contracts.AcmeWidgetCo.deployed().then(function(acmeInstance) {
+        return acmeInstance.getContractBalance({from: accounts[0]});
+      }).then(function(balance) {
+        console.log("Contract balance is: ", balance.toNumber());
+        $('#current-balance').text(balance);
+      }).catch(function(err) {
+        console.log(err, message);
+      });
+    });
+  },
+
+  withdrawAmt: function() {
+    web3.eth.getAccounts(function(error, accounts) {
+      if (error) {
+        console.log(error);
+      }
+      var acmeInstance;
+
+      AcmeApp.contracts.AcmeWidgetCo.deployed().then(function(instance) {
+        var toWithdraw = $('#amt-to-withdraw').val();
+        acmeInstance = instance;
+        return acmeInstance.withdrawFunds(toWithdraw, {from: accounts[0]});
+      }).then(function() {
+        return acmeInstance.getContractBalance({from: accounts[0]});
+      }).then(function(balance) {
+        $('#amt-to-withdraw').val("");
+        console.log("Contract balance is: ", balance);
+      }).catch(function(err) {
+        console.log(err, message);
+      });
+    });
+  },
+
   beginEmerg: function() {
     AcmeApp.contracts.AcmeWidgetCo.deployed().then(function(acmeInstance) {
       console.log("Enabling EMERGENCY state.");
