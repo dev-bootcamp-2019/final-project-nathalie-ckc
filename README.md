@@ -43,6 +43,37 @@ This is what I tested with.  If you test with a different system, your mileage m
 
 ### Steps
 
+#### Local development server
+
+##### 1) Clone the repository and get into the folder
+```
+git clone https://github.com/nathalie-ckc/ConsensysDevAcademyQ4CY18_project.git
+cd ConsensysDevAcademyQ4CY18_project/
+```
+
+##### 2) Use NPM to install the necessary packages
+```
+npm install
+```
+
+##### 3) Start Ganache CLI
+Open a new terminal in the project directory
+```
+ganache-cli
+```
+My project assumes that it's set up for port 8545 (per the course project requirements).  You should see this line in your Ganache CLI terminal:
+```
+Listening on 127.0.0.1:8545
+```
+
+
+#### Rinkeby
+
+.env file
+
+Infura
+
+Accounts 1 to 5 based on the mnemonic in your .env with Rinkeby testnet ether (Can request the max from faucet to one account & then send it to the other accounts).  Account 1 should have the max, and it's probably sufficient to transfer just 2 ETH to each of the others, for basic testing.
 
 ## Library Used
 OpenZeppelin SafeMath
