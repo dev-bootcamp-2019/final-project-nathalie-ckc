@@ -117,7 +117,7 @@ Account 1 is the deployer of the contract, and the constructor sets up the deplo
 Click on the Login button.  
 Here you see all the admin functions:
 ![Admin page](images/admin_page.png "Admin page")
-To demonstrate all the funcitonality of the application would take a long time and a lot of cut and paste to have you step through it yourself, so you can find a video demonstrating how the application is used on YouTube:
+To demonstrate all the functionality of the application would take a long time and a lot of cut and paste to have you step through it yourself, so you can find a video demonstrating how the application is used on YouTube:
 [![YouTube video demonstrating the DApp from this point onward](http://img.youtube.com/vi/d3RNenV85ok/0.jpg)](http://www.youtube.com/watch?v=d3RNenV85ok)
 What you will see in the video (no audio):
 * Deployer ([0]/Account 1) is the first Admin and adds the other users from the accounts associated with this mnemonic.  This is required because function access is based on registered role.
@@ -152,15 +152,43 @@ Because this DApp has role-based access for security purposes, your Ethereum acc
 TODO: Put example here
 
 ##### How I deployed and tested the contract on Rinkeby
-.env file
 
-Infura
+I used dotenv, truffle-hdwallet-provider and Infura to be able to deploy my DApp to Rinkeby using Truffle.  I added the necessary info to truffle.js.
 
-Accounts 1 to 5 based on the mnemonic in your .env with Rinkeby testnet ether (Can request the max from faucet to one account & then send it to the other accounts).  Account 1 should have the max, and it's probably sufficient to transfer just 2 ETH to each of the others, for basic testing.
+I have a .env file that I created in my project directory (it won't be in the one you cloned, you'd have to create your own) with the following variables:
+* MNEMONIC set to the mnemonic for my Rinkeby accounts that have Rinkeby Ether
+* INFURA_API_KEY set to the "PROJECT ID" value in my Infura project for this application
+
+The reason for putting them in a .env file that is in .gitignore, is that this allows the project to pull in values that shouldn't go out in open source land.
+
+I use Metamask Accounts 1 to 5, based on the mnemonic in my .env with Rinkeby testnet ether.  I requested the max from the faucet (18 ETH) to one account & then send it to the other accounts).  I gave Account 1 the most, and 2 ETH to each of the other accounts, for basic testing.
+
+First, I migrate the contracts to Rinkeby (I use --reset, since I've deployed a few times for testing):
+```
+truffle migrate --network rinkeby --reset
+```
+
+The output should look something like this:
+![Migration to Rinkeby](images/migrate_rinkeby.png "Truffle migrate contract to Rinkeby testnet")
+
+Then, I spin up the web server:
+```
+npm run dev
+```
+
+Similar to what I showed above for working with the development network:
+* When the Metamask Login pops up, I use my mnemonic, but this time it's for my Rinkeby accounts that have testnet Ether.  
+* When the approval screen pops up, I approve the connection to the Web3 API.
+* I make sure that Metamask is connected to Rinkeby
+![Select Rinkeby testnet](images/select_rinkeby.png "Select Rinkeby testnet in Metamask")
+
+I basically run through the same steps in this YouTube video as I did in the previous one, except that this one is on Rinkeby testnet and I show one of the transactions on Etherscan at the end:
+[![YouTube video demonstrating the DApp on Rinkeby](http://img.youtube.com/vi/h3718tlRO20/0.jpg)](http://www.youtube.com/watch?v=h3718tlRO20)
+
 
 ##### Future work: truffle test --network rinkeby
 
-As far as I can tell from reading the project requirements, the contracts just have to be deployed on Rinkeby such that they can be interacted with manually to fulfil the requirements.  It didn't have to pass
+As far as I can tell from reading the project requirements, the contracts just have to be deployed on Rinkeby such that they can be interacted with manually to fulfill the requirements.  It didn't have to pass
 ```
 truffle test --network rinkeby
 ```

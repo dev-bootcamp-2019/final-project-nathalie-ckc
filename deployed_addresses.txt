@@ -1,0 +1,5 @@
+Addresses of contracts on Rinkeby:
+  Migrations: 0x4e60bd2dac54255352c9994022e10c3b79c08618
+  SafeMath32: 0x633e0f91b3c58d992b687a1c73f76e98ae1683f4
+  AcmeWidgetCo: 0xc921ceac5db420f0f6e54e280474586369049d2e
+
