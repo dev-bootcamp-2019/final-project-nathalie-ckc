@@ -149,7 +149,9 @@ See deployed_addresses.txt for the addresses of the contracts.
 
 Because this DApp has role-based access for security purposes, your Ethereum account wouldn't already be registered as an approved user.  So, you would not be allowed to call any functions that modify state.  However, you can interact with the contract by calling the getter functions for any of the public variables, since those don't have role-based checks.
 
-TODO: Put example here
+Here's an example of how you could interact with the contract using Remix IDE.  (It shows the state of the contract after the video that's in the next section, where I demo my deployment with my web interface.)  There is no audio.  Be sure to use the compiler version 0.4.24+commit.e67f0147 and note that I had to update the path to the local Remix SafeMath to get AcmeWidgetCo to compile in Remix.
+[![YouTube video showing how you could interact with the contract on Remix](http://img.youtube.com/vi/VEZqTmOxlVE/0.jpg)](http://www.youtube.com/watch?v=VEZqTmOxlVE)
+
 
 ##### How I deployed and tested the contract on Rinkeby
 
