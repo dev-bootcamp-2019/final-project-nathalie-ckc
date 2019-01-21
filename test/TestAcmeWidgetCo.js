@@ -16,6 +16,12 @@ contract('AcmeWidgetCo', function(accounts) {
     // From https://ethereum.stackexchange.com/questions/48627/how-to-catch-revert-error-in-truffle-test-javascript
     const catchRevert = require("./exceptions.js").catchRevert;
 
+    // Why did I write each test?
+    // You can look up all the "Testing" tasks in https://github.com/nathalie-ckc/ConsensysDevAcademyQ4CY18_project/issues?utf8=%E2%9C%93&q=is%3Aissue+%22Testing%3A%22
+    // For every feature implemented, I made a test for it at the same time.
+
+    // Make sure the first Admin is assigned in the constructor, otherwise
+    // wouldn't be able to interact with the contract.
     it("accounts[0] (deployer) should be an admin", async() => {
         const acmeWidgetCo = await AcmeWidgetCo.deployed();
 
@@ -23,8 +29,8 @@ contract('AcmeWidgetCo', function(accounts) {
         assert.equal(role, 1, 'accounts[0] (deployer) is not an admin.');
 	  })
 
-
-
+    // Only the registered accounts can update state of the contract
+    // so, test that we can add them.
     it("Test adding admin, tester, salesdist, customers", async() => {
         const acmeWidgetCo = await AcmeWidgetCo.deployed();
 
@@ -64,12 +70,14 @@ contract('AcmeWidgetCo', function(accounts) {
         assert.equal(role4, 4, 'admin1 could not register customer2 as a Customer.');
     })
 
+    // To limit power, only allow each account to have 1 role and only that role
     it("Test that a registered account can't be registered again.", async() => {
         const acmeWidgetCo = await AcmeWidgetCo.deployed();
 
         await catchRevert(acmeWidgetCo.registerTester(tester1, {from: admin1}));
     })
 
+    // Need a list of factories & test sites for the tester to choose from later
     it("Test admin populating list of factories and test sites", async() => {
         const acmeWidgetCo = await AcmeWidgetCo.deployed();
 
@@ -103,6 +111,7 @@ contract('AcmeWidgetCo', function(accounts) {
         assert.equal(ts2Position.toNumber(), 1, 'TS2 Osaka is not in the list.');
     })
 
+    // Need widgets documented in the system so that they can be later binned & bought
     it("Test tester recording widget result", async() => {
         const acmeWidgetCo = await AcmeWidgetCo.deployed();
 
@@ -124,6 +133,7 @@ contract('AcmeWidgetCo', function(accounts) {
         assert.equal(widget1[3], 0xFFFFFFFF, 'Widget1 incorrect recorded test result.');
     })
 
+    // Make sure that we can still add more test sites later on & the updates will be reflected
     it("Test that additional factory and test sites are usable", async() => {
         const acmeWidgetCo = await AcmeWidgetCo.deployed();
 
@@ -153,7 +163,9 @@ contract('AcmeWidgetCo', function(accounts) {
         assert.equal(widget2[3], 0xFFFF1234, 'Widget2 incorrect recorded test result.');
     })
 
-    it("Test that the recorded widgets in the expected bins", async() => {
+    // Bins are assigned automatically based on the mask. So, make sure that the
+    // widgets end up in the bins where we expect them to land
+    it("Test that the recorded widgets are in the expected bins", async() => {
         const acmeWidgetCo = await AcmeWidgetCo.deployed();
 
         const b1Count = await acmeWidgetCo.binWidgetCount(1);
@@ -171,6 +183,7 @@ contract('AcmeWidgetCo', function(accounts) {
         assert.equal(widget2[0], 1234002, 'Widget2 should be the first in Bin2.');
     })
 
+    // Test the sales distributor functions
     it("Test that sales distributor can update bin unit price.", async() => {
         const acmeWidgetCo = await AcmeWidgetCo.deployed();
 
@@ -227,6 +240,7 @@ contract('AcmeWidgetCo', function(accounts) {
         assert.equal(b3MaskAfter, 0xFE000000, "Bin3 mask should be set to 0xFE000000.");
     })
 
+    // Test the customer functions
     it("Test that customer can only buy widgets that cost <= their msg.value.", async() => {
         const acmeWidgetCo = await AcmeWidgetCo.deployed();
 
@@ -286,6 +300,8 @@ contract('AcmeWidgetCo', function(accounts) {
         assert.equal(lwBin1After, 3, "Should have sold widgets 1-3 from Bin1.");
     })
 
+    // Now that the contract has funds from the purchase by the Customer, we need a
+    // way to withdraw those funds.  Check that the Admin can withdraw the funds.
     it("Test that admin can withdraw funds from contract.", async() => {
         const acmeWidgetCo = await AcmeWidgetCo.deployed();
 
